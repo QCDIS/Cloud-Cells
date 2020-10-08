@@ -1,0 +1,3 @@
+recursive-include cloud-cells/frontend *.js
+recursive-include cloud-cells/backend/templates *.html
+recursive-include cloud-cells *.txt
