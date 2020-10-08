@@ -270,7 +270,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         openFormHandler: async () => {
             const formHtml = await formPromise;
     
-            dialog.modal({title: 'cloud-cells',
+            dialog.modal({title: 'Cloud-Cells',
                 keyboard_manager: Jupyter.keyboard_manager, 
                 body: () => formHtml, 
                 open: onOpen

@@ -15,24 +15,9 @@ from ..container.creator import ContainerCreator
 from .base_handler import BaseHandler
 from .environment_handler import BASE_STRING
 
-
 import logging
-
-logger = logging.getLogger('BuildHandler')
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-
-# create console handler and set level to debug
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# add formatter to ch
-ch.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(ch)
 
 
 def create_config(notebook_path, cell_index, variables):
@@ -43,7 +28,8 @@ def create_config(notebook_path, cell_index, variables):
     })
 
 
-class BuildHandler(BaseHandler):
+class BuildDockerFileHandler(BaseHandler):
+
     def post(self, path):        
         notebook = self.contents_manager.get(path, content=True)
         notebook_path = os.path.join(os.getcwd(), path)
@@ -60,7 +46,6 @@ class BuildHandler(BaseHandler):
         logging.info("base_image: " + str(base_image))
         logging.info("cell_index: " + str(cell_index))
         logging.info("variables: " + str(variables))
-
         if image_name is None or base_image is None or cell_index is None:
             raise HTTPError(400, 'abc')
 
@@ -77,7 +62,7 @@ class BuildHandler(BaseHandler):
             module_path = os.path.join(dirname + '/..' * nested_levels)
 
             #  Copy helper to build context.
-            shutil.copytree(module_path, 
+            shutil.copytree(module_path,
                 tmpdir + "/cloud-cells/",
                 ignore=shutil.ignore_patterns('.ipynb_checkpoints', '__pycache__'))
 
@@ -92,21 +77,13 @@ class BuildHandler(BaseHandler):
                 ignore.write("**/backend\n")
                 ignore.write("**/frontend\n")
 
-            logging.info("image_name: " + str(image_name))
             cc = ContainerCreator(tmpdir, image_name, base_image)
+            docker_file = cc.get_dockerfile()
 
-            try:
-                logging.info("Start building container")
-                _, log = cc.build_container(cc.get_dockerfile())
-                logging.info("Finish building container")
-            except docker.errors.BuildError as be:
-                logger.error(str(be))
-                logger.error(str(be.build_log))
-                log = be.build_log
-
-        logs = "".join([l['stream'] if 'stream' in l else '' for l in log])
-    
 
         self.finish(json.dumps({
-            'logs': logs
+            'dockerFile': docker_file
         }))
+
+
+

@@ -1,6 +1,6 @@
 def _jupyter_server_extension_paths():
     return [{
-        "name": "cloud-cells",
+        "name": "Cloud-Cells",
         "module": "cloud-cells",
         "module_name": "cloud-cells"
     }]
@@ -17,13 +17,14 @@ def _jupyter_nbextension_paths():
 def load_jupyter_server_extension(nbapp):
     from notebook.utils import url_path_join
 
-
+    from .backend.handlers.environment_handler import EnvironmentHandler
+    from .backend.handlers.template_handler import TemplateHandler
     from .backend.handlers.build_handler import BuildHandler
     from .backend.handlers.build_docker_file_handler import BuildDockerFileHandler
     from .backend.handlers.command_handler import CommandHandler
     from .backend.handlers.inspect_handler import InspectHandler
 
-    nbapp.log.info("cloud-cells loaded.")
+    nbapp.log.info("Cloud-Cells loaded.")
 
     web_app = nbapp.web_app
     base = web_app.settings['base_url']
@@ -32,6 +33,7 @@ def load_jupyter_server_extension(nbapp):
     build_pattern = url_path_join(base, '/dj/notebook/(.*)/build')
     build_docker_file_pattern = url_path_join(base, '/dj/notebook/(.*)/build_docker_file')
     image_command_pattern = url_path_join(base, '/dj/image/(.*)/command/(.*)')
+    environment_pattern = url_path_join(base, '/dj/notebook/(.*)/environment')
     inspect_pattern = url_path_join(base, '/dj/notebook/(.*)/inspect/(.*)')
 
     template_pattern = url_path_join(base, r'/dj/templates/(.*\.(?:html|js|css))')
@@ -40,6 +42,7 @@ def load_jupyter_server_extension(nbapp):
         (build_pattern, BuildHandler),
         (build_docker_file_pattern, BuildDockerFileHandler),
         (image_command_pattern, CommandHandler),
+        (environment_pattern, EnvironmentHandler),
         (inspect_pattern, InspectHandler),
         (template_pattern, TemplateHandler)])
 

@@ -8,7 +8,7 @@ define(["require", "base/js/namespace", "./modal"], function (require) {
         load_ipython_extension: () => {
             const action = {
                 icon: 'fa-comment-o', // a font-awesome class used on buttons, etc
-                help: 'Launch the cloud-cells wizard',
+                help: 'Launch the Cloud-Cells wizard',
                 help_index: 'zz',
                 handler: modal.openFormHandler
             };
@@ -18,7 +18,7 @@ define(["require", "base/js/namespace", "./modal"], function (require) {
             const actionName = Jupyter.actions.register(action, action_name, prefix); // returns 'my_extension:show-alert'
             Jupyter.toolbar.add_buttons_group([actionName]);
             
-            console.log('cloud-cells front-end loaded')
+            console.log('Cloud-Cells front-end loaded')
         }
     }
 });
