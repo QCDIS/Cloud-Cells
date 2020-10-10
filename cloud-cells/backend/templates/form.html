@@ -70,10 +70,7 @@
             <input type="password" id="sdia_auth_token" name="sdia_auth_token" minlength="8"><br><br>
         </li>
 
-<!--        <li>-->
-<!--            <label for="cell-index">Cell:</label>-->
-<!--            <select id="cell-index" form="create-form">-->
-<!--            </select>-->
+
 <!--        </li>-->
 <!--        <li>-->
 <!--            <p>Preview:</p>-->
@@ -109,10 +106,14 @@
 
     <ul id="cloud-cells-deploy" class="flex-outer hide">
         <h4>Deploy</h4>
-<!--        <li>-->
-<!--            <label for="run-port">Port:</label>-->
-<!--            <input id="run-port" value="10000" type="number"/>-->
-<!--        </li>-->
+        <li>
+            <label for="docker-image">Docker Image:</label>
+            <select id="docker-image" name="docker-image" form="create-form">
+                {% for display, image in images %}
+                    <option value="{{ image }}">{{ display }}</option>
+                {% end %}
+            </select>
+        </li>
 <!--        <li>-->
 <!--            <label for="container-status">Status:</label>-->
 <!--            <input id="container-status" value="idle" type="text" disabled/>-->
