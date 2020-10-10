@@ -21,9 +21,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             sdia_password: document.getElementById('sdia_password'),
             sdia_password: document.getElementById('sdia_password'),
             sdia_password: document.getElementById('sdia_auth_token')
-
-            imageRepository: document.getElementById('image_repository')
-//            cellSelector: document.getElementById('cell-index')
+//            baseImageSelector: document.getElementById('base-image'),
+//            cellSelector: document.getElementById('cell-index'),
 //            environmentArea: document.getElementById('environment-area'),
 //
 //            runPortInput: document.getElementById('run-port'),

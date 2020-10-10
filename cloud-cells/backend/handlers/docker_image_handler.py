@@ -5,15 +5,14 @@ import docker
 import os
 
 import logging
-logger = logging.getLogger('ImageHandler')
+logger = logging.getLogger('TemplateHandler')
 logger.setLevel(logging.DEBUG)
 
 
 
-class ImageHandler(RequestHandler):
+class DockerImageHandler(RequestHandler):
     def get(self, path):
         args = None
-
         if path == 'form.html':
             args = self._form_html()
         elif path == 'inspector.html':
@@ -21,23 +20,21 @@ class ImageHandler(RequestHandler):
         try:
             if args is None:
                 args = {}
-
+            logger.info('args: ' + str(args))
             self.render(path, **args)
         except FileNotFoundError as e:
             raise HTTPError(404)
 
 
     def _inspector_html(self):
-        return {
-            'variables': []
-        }
+        return {'variables': []}
         
 
     def _form_html(self):
         client = docker.from_env()
         images = client.images.list()
         docker_images = []
-        logger.info('Len of images: '+str(len(images)))
+        logger.info('Number of images: '+str(len(images)))
         for image in images:
             if image.tags and len(image.tags) > 0:
                 name = image.tags[0]
