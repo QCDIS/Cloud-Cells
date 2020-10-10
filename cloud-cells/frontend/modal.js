@@ -65,7 +65,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //            environment: 'elms.environmentArea.value',
 //            variables: 'variables'
 //        })
-        console.log('res: '+res)
+//        console.log('res: '+res)
         Jupyter.notebook.get_cells()
             .map((cell, idx) => cell.cell_type == 'code' ? idx : null)
             .filter(idx => idx !== null)
