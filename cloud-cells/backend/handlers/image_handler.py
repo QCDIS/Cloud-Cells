@@ -5,12 +5,12 @@ import docker
 import os
 
 import logging
-logger = logging.getLogger('TemplateHandler')
+logger = logging.getLogger('ImageHandler')
 logger.setLevel(logging.DEBUG)
 
 
 
-class TemplateHandler(RequestHandler):
+class ImageHandler(RequestHandler):
     def get(self, path):
         args = None
 
@@ -44,21 +44,9 @@ class TemplateHandler(RequestHandler):
                 image_id = image.short_id
                 logger.info('Adding images: ' + str(image_id))
                 docker_images.append((name, image_id))
-        # docker_images = [
-        #     ('Base Notebook', 'jupyter/base-notebook'),
-        #     ('Minimal Notebook', 'jupyter/minimal-notebook'),
-        #     ('R Notebook', 'jupyter/r-notebook'),
-        #     ('Scipy Notebook', 'jupyter/scipy-notebook'),
-        #     ('Data Science Notebook', 'jupyter/datascience-notebook')
-        # ]
-        # docker_images.reverse()
-
-        return {
-            'images': docker_images
-        }
+        return {'images': docker_images}
 
     
     def get_template_path(self):
         dirname = os.path.dirname(__file__)
-
         return os.path.join(dirname + "/../templates")

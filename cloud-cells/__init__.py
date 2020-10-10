@@ -18,7 +18,7 @@ def load_jupyter_server_extension(nbapp):
     from notebook.utils import url_path_join
 
     from .backend.handlers.environment_handler import EnvironmentHandler
-    from .backend.handlers.template_handler import TemplateHandler
+    from .backend.handlers.image_handler import ImageHandler
     from .backend.handlers.build_handler import BuildHandler
     from .backend.handlers.build_docker_file_handler import BuildDockerFileHandler
     from .backend.handlers.command_handler import CommandHandler
@@ -44,6 +44,6 @@ def load_jupyter_server_extension(nbapp):
         (image_command_pattern, CommandHandler),
         (environment_pattern, EnvironmentHandler),
         (inspect_pattern, InspectHandler),
-        (template_pattern, TemplateHandler)])
+        (template_pattern, ImageHandler)])
 
 
