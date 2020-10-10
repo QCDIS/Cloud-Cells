@@ -39,11 +39,11 @@
 </style>
 
 <ul id="tabs" class="nav nav-tabs">
-    <li id="btn-tab-build" class="active">
-        <a href="#build" data-toggle="tab">Build</a>
+    <li id="btn-tab-conf" class="active">
+        <a href="#conf" data-toggle="tab">Configure SDIA</a>
     </li>
-    <li id="btn-tab-run">
-        <a href="#run" data-toggle="tab">Run</a>
+    <li id="btn-tab-deploy">
+        <a href="#run" data-toggle="tab">Deploy Image</a>
     </li>
     <li id="btn-tab-validate">
         <a href="#validate" data-toggle="tab">About</a>
@@ -51,76 +51,82 @@
 </ul>
 
 <form id="cloud-cells-form">
-    <ul id="cloud-cells-build" class="flex-outer">
-        <h4>Build</h4>
+    <ul id="sdia-conf" class="flex-outer">
+<!--        <h4>Configure SDIA</h4>-->
         <li>
-            <label for="image-name">Image name:</label>
-            <input id="image-name" value="nb_helper"/>
+            <label for="sdia_url">SDIA URL:</label>
+            <input type="url" id="sdia_url" pattern="https://.*" size="40" value="https://fry.lab.uvalight.net:30001/manager"/>
         </li>
         <li>
-            <label for="base-image">Base image:</label>
-            <select id="base-image" name="base-image" form="create-form">
+            <label for="sdia_username">SDIA Username:</label>
+            <input type="text" id="sdia_username" name="sdia_username" minlength="4" maxlength="8" size="10">
+        </li>
+        <li>
+            <label for="pwd">SDIA Password:</label>
+            <input type="password" id="sdia_password" name="sdia_password" minlength="8"><br><br>
+        </li>
+        <li>
+            <label for="sdia_auth_token">Authorization token:</label>
+            <input type="password" id="sdia_auth_token" name="sdia_auth_token" minlength="8"><br><br>
+        </li>
+
+<!--        <li>-->
+<!--            <label for="cell-index">Cell:</label>-->
+<!--            <select id="cell-index" form="create-form">-->
+<!--            </select>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <p>Preview:</p>-->
+<!--            <div id="cell-preview"></div>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <label for="environment-area">Conda environment.yml:</label>-->
+<!--            <textarea id="environment-area" cols="50" rows="7" type="textarea"></textarea>-->
+<!--        </li>-->
+<!--        <li id="kernel-specific">-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <p>-->
+<!--                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>-->
+<!--            </p>-->
+<!--            <p id="build-dockerfile-notify"></p>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <p>Dockerfile:</p>-->
+<!--            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <p>-->
+<!--                <input id="build-container-button" type="submit" value="Build"/>-->
+<!--            </p>-->
+<!--            <p id="build-notify"></p>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <p>Build logs:</p>-->
+<!--            <textarea id="build-output" cols="50" rows="5" type="textarea" disabled></textarea>-->
+<!--        </li>-->
+    </ul>
+
+    <ul id="cloud-cells-deploy" class="flex-outer hide">
+        <h4>Deploy</h4>
+        <li>
+            <label for="docker-image">Docker Image:</label>
+            <select id="docker-image" name="docker-image" form="create-form">
                 {% for display, image in images %}
                     <option value="{{ image }}">{{ display }}</option>
                 {% end %}
             </select>
         </li>
-        <li>
-            <label for="cell-index">Cell:</label>
-            <select id="cell-index" form="create-form">
-                
-            </select>
-            
-        </li>
-        <li>
-            <p>Preview:</p>
-            <div id="cell-preview"></div>
-        </li>
-        <li>
-            <label for="environment-area">Conda environment.yml:</label>
-            <textarea id="environment-area" cols="50" rows="7" type="textarea"></textarea>
-        </li>
-        <li id="kernel-specific">
-        </li>
-        <li>
-            <p>
-                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>
-            </p>
-            <p id="build-dockerfile-notify"></p>
-        </li>
-        <li>
-            <p>Dockerfile:</p>
-            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>
-        </li>
-        <li>
-            <p>
-                <input id="build-container-button" type="submit" value="Build"/>
-            </p>
-            <p id="build-notify"></p>
-        </li>
-        <li>
-            <p>Build logs:</p>
-            <textarea id="build-output" cols="50" rows="5" type="textarea" disabled></textarea>
-        </li>
-    </ul>
 
-    <ul id="cloud-cells-run" class="flex-outer hide">
-        <h4>Run</h4>
         <li>
-            <label for="run-port">Port:</label>
-            <input id="run-port" value="10000" type="number"/>
+            <label for="cloud-provider">Cloud Provider:</label>
+            <select id="cloud-provider" name="cloud-provider" form="create-form">
+                {% for display, provider in providers %}
+                    <option value="{{ provider }}">{{ display }}</option>
+                {% end %}
+            </select>
         </li>
-        <li>
-            <label for="container-status">Status:</label>
-            <input id="container-status" value="idle" type="text" disabled/>
-        </li>
-        <li>
-            <div>
-                <input id="run-button" type="submit" value="Run"/>
-                <input id="status-button" type="submit" value="Status"/>
-                <input id="stop-button" type="submit" value="Stop"/>
-            </div>
-        </li>
+
     </ul>
     <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>

@@ -1,7 +1,14 @@
 from tornado.web import RequestHandler, HTTPError
 from tornado import template
 
+import docker
 import os
+
+import logging
+logger = logging.getLogger('TemplateHandler')
+logger.setLevel(logging.DEBUG)
+
+
 
 class TemplateHandler(RequestHandler):
     def get(self, path):
@@ -27,18 +34,27 @@ class TemplateHandler(RequestHandler):
         
 
     def _form_html(self):
-        base_images = [
-            ('Base Notebook', 'jupyter/base-notebook'),
-            ('Minimal Notebook', 'jupyter/minimal-notebook'),
-            ('R Notebook', 'jupyter/r-notebook'),
-            ('Scipy Notebook', 'jupyter/scipy-notebook'),
-            ('Data Science Notebook', 'jupyter/datascience-notebook')
-        ]
-
-        base_images.reverse()
+        client = docker.from_env()
+        images = client.images.list()
+        docker_images = []
+        logger.info('Len of images: '+str(len(images)))
+        for image in images:
+            if image.tags and len(image.tags) > 0:
+                name = image.tags[0]
+                image_id = image.short_id
+                logger.info('Adding images: ' + str(image_id))
+                docker_images.append((name, image_id))
+        # docker_images = [
+        #     ('Base Notebook', 'jupyter/base-notebook'),
+        #     ('Minimal Notebook', 'jupyter/minimal-notebook'),
+        #     ('R Notebook', 'jupyter/r-notebook'),
+        #     ('Scipy Notebook', 'jupyter/scipy-notebook'),
+        #     ('Data Science Notebook', 'jupyter/datascience-notebook')
+        # ]
+        # docker_images.reverse()
 
         return {
-            'images': base_images
+            'images': docker_images
         }
 
     

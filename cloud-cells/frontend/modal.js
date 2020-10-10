@@ -12,33 +12,37 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     let elms;
 
     let notebook;
-    let currTab = 'build';
+    let currTab = 'configure';
 
     const getElements = () => {
         return {
-            imageNameInput: document.getElementById('image-name'),
-            baseImageSelector: document.getElementById('base-image'),
-            cellSelector: document.getElementById('cell-index'),
-            environmentArea: document.getElementById('environment-area'),
-
-            runPortInput: document.getElementById('run-port'),
-
-            buildButton: document.getElementById('build-container-button'),
-            buildOutput: document.getElementById('build-output'),
-            buildNotify: document.getElementById('build-notify'),
-
-            buildDockerfileButton: document.getElementById('build-dockerfile-button'),
-            buildDockerFileOutput: document.getElementById('build-dockerfile-output'),
-            buildDockerFileNotify: document.getElementById('build-dockerfile-notify'),
-
-            runButton: document.getElementById('run-button'),
-            statusButton: document.getElementById('status-button'),
-            stopButton: document.getElementById('stop-button'),
-
-            cellPreview: document.getElementById('cell-preview'),
-            containerStatus: document.getElementById('container-status'),
-
-            kernelSpecific: document.getElementById('kernel-specific')
+            sdia_url: document.getElementById('sdia_url'),
+            sdia_username: document.getElementById('sdia_username'),
+            sdia_password: document.getElementById('sdia_password'),
+            sdia_password: document.getElementById('sdia_password'),
+            sdia_password: document.getElementById('sdia_auth_token')
+//            baseImageSelector: document.getElementById('base-image'),
+//            cellSelector: document.getElementById('cell-index'),
+//            environmentArea: document.getElementById('environment-area'),
+//
+//            runPortInput: document.getElementById('run-port'),
+//
+//            buildButton: document.getElementById('build-container-button'),
+//            buildOutput: document.getElementById('build-output'),
+//            buildNotify: document.getElementById('build-notify'),
+//
+//            buildDockerfileButton: document.getElementById('build-dockerfile-button'),
+//            buildDockerFileOutput: document.getElementById('build-dockerfile-output'),
+//            buildDockerFileNotify: document.getElementById('build-dockerfile-notify'),
+//
+//            runButton: document.getElementById('run-button'),
+//            statusButton: document.getElementById('status-button'),
+//            stopButton: document.getElementById('stop-button'),
+//
+//            cellPreview: document.getElementById('cell-preview'),
+//            containerStatus: document.getElementById('container-status'),
+//
+//            kernelSpecific: document.getElementById('kernel-specific')
         }
     }
 
@@ -112,7 +116,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }, 5000)
 
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
-            imageName: elms.imageNameInput.value,
+            imageName: elms.sdia_url.value,
             baseImage: elms.baseImageSelector.value,
             cellIndex: elms.cellSelector.value,
             environment: elms.environmentArea.value,
@@ -154,7 +158,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }, 5000)
 
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
-            imageName: elms.imageNameInput.value,
+            imageName: elms.sdia_url.value,
             baseImage: elms.baseImageSelector.value,
             cellIndex: elms.cellSelector.value,
             environment: elms.environmentArea.value,
@@ -181,7 +185,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.runButton.value = 'Running...';
         elms.runButton.disabled = true;
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdia_url.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/run`, {
             port: Number(elms.runPortInput.value)
         })
@@ -201,7 +205,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handleStatusButtonClick = async (e) => {
         e.preventDefault();
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdia_url.value;
         const res = await jsonRequest('GET', `/dj/image/${imageName}/command/status`)
 
         if (res.status !== 200) {
@@ -216,7 +220,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handleStopButtonClick = async (e) => {
         e.preventDefault();
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdia_url.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/stop`)
 
         if (res.status !== 200) {
@@ -232,12 +236,12 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const onOpen = async () => {
         notebook = await Jupyter.notebook.save_notebook();
         
-        buttonElements['build'] = document.getElementById("btn-tab-build");
-        buttonElements['run'] = document.getElementById("btn-tab-run");
+        buttonElements['configure'] = document.getElementById("btn-tab-conf");
+        buttonElements['deploy'] = document.getElementById("btn-tab-deploy");
         buttonElements['validate'] = document.getElementById("btn-tab-validate");
 
-        formElements['build'] = document.getElementById("cloud-cells-build");
-        formElements['run'] = document.getElementById("cloud-cells-run");
+        formElements['configure'] = document.getElementById("sdia-conf");
+        formElements['deploy'] = document.getElementById("cloud-cells-deploy");
         formElements['validate'] = document.getElementById("cloud-cells-about");
 
         Object.keys(buttonElements).forEach(k => {
