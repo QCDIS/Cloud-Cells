@@ -20,9 +20,9 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             sdia_username: document.getElementById('sdia_username'),
             sdia_password: document.getElementById('sdia_password'),
             sdia_password: document.getElementById('sdia_password'),
-            sdia_password: document.getElementById('sdia_auth_token')
+            sdia_password: document.getElementById('sdia_auth_token'),
 //            baseImageSelector: document.getElementById('base-image'),
-//            cellSelector: document.getElementById('cell-index'),
+            imageSelector: document.getElementById('docker-image2')
 //            environmentArea: document.getElementById('environment-area'),
 //
 //            runPortInput: document.getElementById('run-port'),
@@ -56,8 +56,16 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         currTab = newTab;
     };
 
-    const setCellSelectOptions = () => {
-        // Allow the user to only select code cells.
+    const setImageSelectOptions = () => {
+
+//        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
+//            imageName: 'elms.imageNameInput.value',
+//            baseImage: 'elms.baseImageSelector.value',
+//            cellIndex: 'elms.cellSelector.value',
+//            environment: 'elms.environmentArea.value',
+//            variables: 'variables'
+//        })
+        console.log('res: '+res)
         Jupyter.notebook.get_cells()
             .map((cell, idx) => cell.cell_type == 'code' ? idx : null)
             .filter(idx => idx !== null)
@@ -66,11 +74,11 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
                 opt.value = idx;
                 opt.innerHTML = `Cell ${idx}`
 
-                elms.cellSelector.appendChild(opt);
+                elms.imageSelector.appendChild(opt);
             })
 
-        elms.cellSelector.onchange = async (e) => {
-            const idx = Number(elms.cellSelector.value)
+        elms.imageSelector.onchange = async (e) => {
+            const idx = Number(elms.imageSelector.value)
             const cellPreviewElm = Jupyter.notebook.get_cell(idx).output_area.wrapper[0];
             const outputElm = cellPreviewElm.getElementsByClassName('output_subarea')[0];
 
@@ -92,7 +100,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         }
 
-        elms.cellSelector.onchange(null);
+        elms.imageSelector.onchange(null);
     }
 
     const handleBuildDockerFileButtonClick = async (e) => {
@@ -118,7 +126,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
             imageName: elms.sdia_url.value,
             baseImage: elms.baseImageSelector.value,
-            cellIndex: elms.cellSelector.value,
+            cellIndex: elms.imageSelector.value,
             environment: elms.environmentArea.value,
             variables: variables
         })
@@ -160,7 +168,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
             imageName: elms.sdia_url.value,
             baseImage: elms.baseImageSelector.value,
-            cellIndex: elms.cellSelector.value,
+            cellIndex: elms.imageSelector.value,
             environment: elms.environmentArea.value,
             variables: variables
         })
@@ -252,7 +260,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms = getElements();
 
-        setCellSelectOptions(elms.cellSelector, elms.cellPreview);
+        setImageSelectOptions(elms.imageSelector, elms.cellPreview);
 
 
         elms.buildButton.onclick = handlebuildContainerButtonClick;
