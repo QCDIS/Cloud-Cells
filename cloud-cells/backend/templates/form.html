@@ -109,24 +109,21 @@
 
     <ul id="cloud-cells-deploy" class="flex-outer hide">
         <h4>Deploy</h4>
-        <li>
-            <label for="docker-image">Docker Image:</label>
-            <select id="docker-image" name="docker-image" form="create-form">
-                {% for display, image in images %}
-                    <option value="{{ image }}">{{ display }}</option>
-                {% end %}
-            </select>
-        </li>
-
-        <li>
-            <label for="cloud-provider">Cloud Provider:</label>
-            <select id="cloud-provider" name="cloud-provider" form="create-form">
-                {% for display, provider in providers %}
-                    <option value="{{ provider }}">{{ display }}</option>
-                {% end %}
-            </select>
-        </li>
-
+<!--        <li>-->
+<!--            <label for="run-port">Port:</label>-->
+<!--            <input id="run-port" value="10000" type="number"/>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <label for="container-status">Status:</label>-->
+<!--            <input id="container-status" value="idle" type="text" disabled/>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <div>-->
+<!--                <input id="run-button" type="submit" value="Run"/>-->
+<!--                <input id="status-button" type="submit" value="Status"/>-->
+<!--                <input id="stop-button" type="submit" value="Stop"/>-->
+<!--            </div>-->
+<!--        </li>-->
     </ul>
     <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>
