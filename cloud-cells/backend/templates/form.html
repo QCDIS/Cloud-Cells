@@ -62,7 +62,7 @@
             <input type="text" id="sdia_username" name="sdia_username" minlength="4" maxlength="8" size="10">
         </li>
         <li>
-            <label for="pwd">SDIA Password:</label>
+            <label for="sdia_password">SDIA Password:</label>
             <input type="password" id="sdia_password" name="sdia_password" minlength="8"><br><br>
         </li>
         <li>
@@ -82,12 +82,7 @@
 <!--        </li>-->
 <!--        <li id="kernel-specific">-->
 <!--        </li>-->
-<!--        <li>-->
-<!--            <p>-->
-<!--                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>-->
-<!--            </p>-->
-<!--            <p id="build-dockerfile-notify"></p>-->
-<!--        </li>-->
+
 <!--        <li>-->
 <!--            <p>Dockerfile:</p>-->
 <!--            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>-->
@@ -108,7 +103,7 @@
         <h4>Deploy</h4>
         <li>
             <label for="docker-image">Docker Image:</label>
-            <select id="docker-image" name="docker-image" form="create-form">
+            <select id="docker-image" name="docker-image" form="cloud-cells-form">
                 {% for display, image in images %}
                     <option value="{{ image }}">{{ display }}</option>
                 {% end %}
@@ -117,23 +112,17 @@
 
         <li>
             <label for="cloud-provider">Cloud Provider:</label>
-            <select id="cloud-provider" form="create-form">
+            <select id="cloud-provider" form="cloud-cells-form">
             </select>
 
         </li>
 
-
-<!--        <li>-
-<!--            <label for="container-status">Status:</label>-->
-<!--            <input id="container-status" value="idle" type="text" disabled/>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--            <div>-->
-<!--                <input id="run-button" type="submit" value="Run"/>-->
-<!--                <input id="status-button" type="submit" value="Status"/>-->
-<!--                <input id="stop-button" type="submit" value="Stop"/>-->
-<!--            </div>-->
-<!--        </li>-->
+        <li>
+            <p>
+                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>
+            </p>
+            <p id="build-dockerfile-notify"></p>
+        </li>
     </ul>
     <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>
