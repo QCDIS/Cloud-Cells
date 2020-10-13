@@ -28,22 +28,16 @@ def create_config(notebook_path, cell_index, variables):
     })
 
 
-class BuildDockerFileHandler(BaseHandler):
+class CloudProviderHandler(BaseHandler):
 
     def post(self, path):
         body = self.get_json_body()
+        providers = ['any','ec2','exogeni']
+        logger.info(str(providers))
+        logger.info(str(json.dumps(providers)))
+        self.finish(json.dumps(providers))
 
-        image_name = body.get('imageName')
-        base_image = body.get('baseImage')
-        cell_index = int(body.get('cellIndex'))
-        variables = body.get('variables', {})
-        logging.info("image_name: " + str(image_name))
-        logging.info("base_image: " + str(base_image))
-        logging.info("cell_index: " + str(cell_index))
-        logging.info("variables: " + str(variables))
-        self.finish(json.dumps({
-            'dockerFile': 'docker_file'
-        }))
+
 
 
 

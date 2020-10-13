@@ -43,7 +43,7 @@ def create_config(notebook_path, cell_index, variables):
     })
 
 
-class BuildHandler(BaseHandler):
+class DeployHandler(BaseHandler):
     def post(self, path):        
         notebook = self.contents_manager.get(path, content=True)
         notebook_path = os.path.join(os.getcwd(), path)
