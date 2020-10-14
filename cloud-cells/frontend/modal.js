@@ -12,17 +12,16 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     let elms;
 
     let notebook;
-    let currTab = 'configure';
+    let currTab = 'conf';
 
     const getElements = () => {
         return {
-            sdia_url: document.getElementById('sdia_url'),
-            sdia_username: document.getElementById('sdia_username'),
-            sdia_password: document.getElementById('sdia_password'),
-            sdia_password: document.getElementById('sdia_password'),
-            sdia_password: document.getElementById('sdia_auth_token'),
+            sdiaURLInput: document.getElementById('sdia-url'),
+            sdiaUsernameInput: document.getElementById('sdia-username'),
+            sdiaPasswordeInput: document.getElementById('sdia-password'),
 //            baseImageSelector: document.getElementById('base-image'),
-            providerSelector: document.getElementById('cloud-provider')
+            dockerRepositoryInput: document.getElementById('docker-repository-url'),
+            imageSelector: document.getElementById('docker-image')
 //            environmentArea: document.getElementById('environment-area'),
 //
 //            runPortInput: document.getElementById('run-port'),
@@ -40,48 +39,43 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //            stopButton: document.getElementById('stop-button'),
 //
 //            cellPreview: document.getElementById('cell-preview'),
-//            containerStatus: document.getElementById('container-status'),
-//
-//            kernelSpecific: document.getElementById('kernel-specific')
+//            containerStatus: document.getElementById('container-status')
         }
     }
 
     const switchTab = async (newTab) => {
+        console.log('newTab: '+newTab)
         Object.keys(formElements).forEach(k => {
+            console.log('k: '+k)
+            console.log('formElements[k]: '+formElements[k])
             formElements[k].classList.add('hide');
         });
-
+        console.log('formElements[newTab]: '+formElements[newTab])
         formElements[newTab].classList.remove('hide');
 
         currTab = newTab;
     };
 
     const setImageSelectOptions = async (e) => {
+        console.log('setImageSelectOptions')
+        console.log('elms.dockerRepositoryInput.value: '+elms.dockerRepositoryInput.value)
 
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/cloud_provider`, {
-//            imageName: 'elms.sdia_url.value',
-//            baseImage: 'elms.baseImageSelector.value',
-//            cellIndex: 'elms.providerSelector.value',
-//            environment: 'elms.environmentArea.value',
-//            variables: 'variables'
+//        const res = await jsonRequest('GET', `/dj/image/${notebook.path}/command/status`)
+        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
+            dockerRepository: elms.dockerRepositoryInput.value
         })
-
-        if (res.status !== 200) {
-            return alert(await res.text())
-        }
-
-        const providers = await res.json()
-        console.log(providers)
-        providers.forEach(provider => console.log(provider));
-        providers.forEach(provider => {
+        console.log('res: '+res)
+        const images = await res.json()
+        console.log('images: '+images)
+        images.forEach(image => {
             const opt = document.createElement('option');
-            opt.value = provider;
-            opt.innerHTML = `${provider}`
-            elms.providerSelector.appendChild(opt);
-            console.log(provider);
+            opt.value = image;
+            opt.innerHTML = `${image}`
+            elms.imageSelector.appendChild(opt);
         })
 
 
+//        // Allow the user to only select code cells.
 //        Jupyter.notebook.get_cells()
 //            .map((cell, idx) => cell.cell_type == 'code' ? idx : null)
 //            .filter(idx => idx !== null)
@@ -90,29 +84,19 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //                opt.value = idx;
 //                opt.innerHTML = `Cell ${idx}`
 //
-//                elms.providerSelector.appendChild(opt);
+//                elms.imageSelector.appendChild(opt);
 //            })
-//
-//        elms.providerSelector.onchange = async (e) => {
-//            const idx = Number(elms.providerSelector.value)
-//            const cellPreviewElm = Jupyter.notebook.get_cell(idx).output_area.wrapper[0];
-//            const outputElm = cellPreviewElm.getElementsByClassName('output_subarea')[0];
-//            const inspectorResp = await fetch(`/dj/notebook/${notebook.path}/inspect/inspector.html?cellIdx=${idx}`);
-//            if (inspectorResp.status === 501) {
-//                // No inspector for this Kernel
-//                return;
-//            } else if (!inspectorResp.ok) {
-//                return alert(await inspectorResp.text());
-//            }
-//
-//            elms.kernelSpecific.innerHTML = await inspectorResp.text();
-//
-//        }
-//
-//        elms.providerSelector.onchange(null);
+
+        elms.imageSelector.onchange = async (e) => {
+            const imageName = elms.imageSelector.value
+            console.log('imageName: '+imageName)
+        }
+
+        elms.imageSelector.onchange(null);
     }
 
     const handleBuildDockerFileButtonClick = async (e) => {
+        console.log('handleBuildDockerFileButtonClick')
         e.preventDefault();
 
 //        elms.buildDockerfileButton.value = 'Building Dockerfile...';
@@ -133,10 +117,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }, 5000)
 
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
-            imageName: elms.sdia_url.value,
+            imageName: elms.sdiaURLInput.value,
             baseImage: elms.baseImageSelector.value,
-            cellIndex: elms.providerSelector.value,
-            environment: 'elms.environmentArea.value',
+            cellIndex: elms.imageSelector.value,
+            environment: elms.environmentArea.value,
             variables: variables
         })
 
@@ -155,6 +139,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     }
 
     const handlebuildContainerButtonClick = async (e) => {
+        console.log('handlebuildContainerButtonClick')
         e.preventDefault();
 
 //        elms.buildButton.value = 'Building Container...';
@@ -175,10 +160,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }, 5000)
 
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
-            imageName: elms.sdia_url.value,
+            imageName: elms.sdiaURLInput.value,
             baseImage: elms.baseImageSelector.value,
-            cellIndex: elms.providerSelector.value,
-            environment: 'elms.environmentArea.value',
+            cellIndex: elms.imageSelector.value,
+            environment: elms.environmentArea.value,
             variables: variables
         })
 
@@ -193,16 +178,17 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
 //        elms.buildButton.value = 'Build';
 //        elms.buildButton.disabled = false;
-//        elms.buildOutput.value = data['logs']
+        elms.buildOutput.value = data['logs']
     }
 
     const handleRunButtonClick = async (e) => {
+        console.log('handleRunButtonClick')
         e.preventDefault();
 
-//        elms.runButton.value = 'Running...';
-//        elms.runButton.disabled = true;
+        elms.runButton.value = 'Running...';
+        elms.runButton.disabled = true;
 
-        const imageName = elms.sdia_url.value;
+        const imageName = elms.sdiaURLInput.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/run`, {
             port: Number(elms.runPortInput.value)
         })
@@ -213,16 +199,17 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         const data = await res.json()
 
-//        elms.runButton.value = 'Run';
-//        elms.runButton.disabled = false;
+        elms.runButton.value = 'Run';
+        elms.runButton.disabled = false;
 
         elms.containerStatus.value = data['data'];
     };
 
     const handleStatusButtonClick = async (e) => {
+        console.log('handleStatusButtonClick')
         e.preventDefault();
 
-        const imageName = elms.sdia_url.value;
+        const imageName = elms.sdiaURLInput.value;
         const res = await jsonRequest('GET', `/dj/image/${imageName}/command/status`)
 
         if (res.status !== 200) {
@@ -235,9 +222,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     }
 
     const handleStopButtonClick = async (e) => {
+        console.log('handleStopButtonClick')
         e.preventDefault();
 
-        const imageName = elms.sdia_url.value;
+        const imageName = elms.sdiaURLInput.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/stop`)
 
         if (res.status !== 200) {
@@ -251,15 +239,16 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
 
     const onOpen = async () => {
+        console.log('onOpen')
         notebook = await Jupyter.notebook.save_notebook();
-        
-        buttonElements['configure'] = document.getElementById("btn-tab-conf");
+        console.log('notebook: '+notebook)
+        buttonElements['conf'] = document.getElementById("btn-tab-configure-sdia");
         buttonElements['deploy'] = document.getElementById("btn-tab-deploy");
-        buttonElements['validate'] = document.getElementById("btn-tab-validate");
+        buttonElements['about'] = document.getElementById("btn-tab-about");
 
-        formElements['configure'] = document.getElementById("sdia-conf");
+        formElements['conf'] = document.getElementById("cloud-cells-sdia-conf");
         formElements['deploy'] = document.getElementById("cloud-cells-deploy");
-        formElements['validate'] = document.getElementById("cloud-cells-about");
+        formElements['about'] = document.getElementById("cloud-cells-about");
 
         Object.keys(buttonElements).forEach(k => {
             buttonElements[k].onclick = () => switchTab(k);
@@ -269,14 +258,14 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms = getElements();
 
-        setImageSelectOptions(elms.providerSelector, elms.cellPreview);
+        setImageSelectOptions(elms.imageSelector, elms.cellPreview);
 
 
 //        elms.buildButton.onclick = handlebuildContainerButtonClick;
 //        elms.buildDockerfileButton.onclick = handleBuildDockerFileButtonClick;
-//        elms.runButton.onclick = handleRunButtonClick;
-//        elms.statusButton.onclick = handleStatusButtonClick;
-//        elms.stopButton.onclick = handleStopButtonClick;
+        elms.runButton.onclick = handleRunButtonClick;
+        elms.statusButton.onclick = handleStatusButtonClick;
+        elms.stopButton.onclick = handleStopButtonClick;
 
         const res = await jsonRequest('GET', `/dj/notebook/${notebook.path}/environment`)
 
@@ -284,7 +273,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             return alert(await res.text());
         }
 
-//        elms.environmentArea.value = (await res.json()).data
+        elms.environmentArea.value = (await res.json()).data
     }
     
     return {

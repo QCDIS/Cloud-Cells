@@ -9,6 +9,9 @@ from notebook.base.handlers import APIHandler, HTTPError
 from ..container.creator import ContainerCreator
 from .base_handler import BaseHandler
 
+import logging
+logger = logging.getLogger('CommandHandler')
+logger.setLevel(logging.DEBUG)
 
 class CommandHandler(BaseHandler):
     def post(self, image_name, command):
@@ -20,10 +23,8 @@ class CommandHandler(BaseHandler):
         raise HTTPError(400, 'no_cmd')
 
     def get(self, image_name, command):
-        if command == 'status':
-            return self._status(image_name)
-
-        raise HTTPError(400, 'no_cmd')
+        logger.info('get image_name: '+image_name+' command: '+command)
+        return ['image1','image2']
 
     def _stop(self, image_name):
         client = docker.from_env()

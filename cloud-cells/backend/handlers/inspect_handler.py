@@ -44,7 +44,7 @@ class InspectHandler(BaseHandler):
             variables = inspector.get_variables(notebook, cell_index)
 
             self.finish(json.dumps({
-                'data': variables
+                'data': 'variables'
             }))
         elif command == "inspector.html":
             cell_index = self._int_argument('cellIdx')

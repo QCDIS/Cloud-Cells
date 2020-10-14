@@ -4,9 +4,8 @@ USER root
 
 EXPOSE 8888
 
+
 COPY . src
-RUN pip install jupyter
-#RUN pip install cloud-cells
 WORKDIR src
 RUN python setup.py install
 RUN jupyter serverextension enable --py cloud-cells

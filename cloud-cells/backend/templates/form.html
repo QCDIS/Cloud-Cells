@@ -39,50 +39,42 @@
 </style>
 
 <ul id="tabs" class="nav nav-tabs">
-    <li id="btn-tab-conf" class="active">
-        <a href="#conf" data-toggle="tab">Configure SDIA</a>
+    <li id="btn-tab-configure-sdia" class="active">
+        <a href="#configure-sdia" data-toggle="tab">Configure SDIA</a>
     </li>
     <li id="btn-tab-deploy">
-        <a href="#run" data-toggle="tab">Deploy Image</a>
+        <a href="#deploy" data-toggle="tab">Deploy</a>
     </li>
-    <li id="btn-tab-validate">
-        <a href="#validate" data-toggle="tab">About</a>
+    <li id="btn-tab-about">
+        <a href="#about" data-toggle="tab">About</a>
     </li>
 </ul>
 
 <form id="cloud-cells-form">
-    <ul id="sdia-conf" class="flex-outer">
-<!--        <h4>Configure SDIA</h4>-->
+    <ul id="cloud-cells-sdia-conf" class="flex-outer">
         <li>
-            <label for="sdia_url">SDIA URL:</label>
-            <input type="url" id="sdia_url" pattern="https://.*" size="40" value="https://fry.lab.uvalight.net:30001/manager"/>
+            <label for="sdia-url">SDIA URL:</label>
+            <input type="url" id="sdia-url" size=40 value="https://fry.lab.uvalight.net:30001/manager"/>
         </li>
         <li>
-            <label for="sdia_username">SDIA Username:</label>
-            <input type="text" id="sdia_username" name="sdia_username" minlength="4" maxlength="8" size="10">
+            <label for="sdia-username">SDIA Username:</label>
+            <input id="sdia-username" value=""/>
         </li>
         <li>
-            <label for="sdia_password">SDIA Password:</label>
-            <input type="password" id="sdia_password" name="sdia_password" minlength="8"><br><br>
+            <label for="sdia-password">SDIA Password:</label>
+            <input type="password" id="sdia-password" name="sdia-password" minlength="8"><br><br>
         </li>
         <li>
-            <label for="sdia_auth_token">Authorization token:</label>
-            <input type="password" id="sdia_auth_token" name="sdia_auth_token" minlength="8"><br><br>
+            <label for="sdia-auth-token">Authorization token:</label>
+            <input type="password" id="sdia-auth-token" name="sdia-auth-token" minlength="8"><br><br>
         </li>
 
-
-<!--        </li>-->
 <!--        <li>-->
-<!--            <p>Preview:</p>-->
-<!--            <div id="cell-preview"></div>-->
+<!--            <p>-->
+<!--                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>-->
+<!--            </p>-->
+<!--            <p id="build-dockerfile-notify"></p>-->
 <!--        </li>-->
-<!--        <li>-->
-<!--            <label for="environment-area">Conda environment.yml:</label>-->
-<!--            <textarea id="environment-area" cols="50" rows="7" type="textarea"></textarea>-->
-<!--        </li>-->
-<!--        <li id="kernel-specific">-->
-<!--        </li>-->
-
 <!--        <li>-->
 <!--            <p>Dockerfile:</p>-->
 <!--            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>-->
@@ -100,29 +92,32 @@
     </ul>
 
     <ul id="cloud-cells-deploy" class="flex-outer hide">
-        <h4>Deploy</h4>
         <li>
-            <label for="docker-image">Docker Image:</label>
-            <select id="docker-image" name="docker-image" form="cloud-cells-form">
-                {% for display, image in images %}
-                    <option value="{{ image }}">{{ display }}</option>
-                {% end %}
+            <label for="docker-repository-url">Docker Repository URL:</label>
+            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
+        </li>
+        <li>
+            <label for="docker-image">Image:</label>
+            <select id="docker-image" form="cloud-cells-form">
             </select>
         </li>
-
         <li>
             <label for="cloud-provider">Cloud Provider:</label>
             <select id="cloud-provider" form="cloud-cells-form">
             </select>
-
         </li>
 
-        <li>
-            <p>
-                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>
-            </p>
-            <p id="build-dockerfile-notify"></p>
-        </li>
+<!--        <li>-->
+<!--            <label for="container-status">Status:</label>-->
+<!--            <input id="container-status" value="idle" type="text" disabled/>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <div>-->
+<!--                <input id="run-button" type="submit" value="Run"/>-->
+<!--                <input id="status-button" type="submit" value="Status"/>-->
+<!--                <input id="stop-button" type="submit" value="Stop"/>-->
+<!--            </div>-->
+<!--        </li>-->
     </ul>
     <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>
@@ -143,7 +138,6 @@
             <img src="https://bynder-public-eu-central-1.s3.amazonaws.com/media/9E3E0032-62BD-4694-A3CCB1BC17CA3CAF/820AE599-3321-4FD3-96AAF5D0926A84C2/webimage-ED0F2C5B-4DB7-4916-8A9990566EFDA309.png" alt="UvA" width="5%" height="5%">
             <img src="https://mns-research.nl/images/logo_hua931301caa9e2c039e68fbb874deb22a_17897_0x70_resize_lanczos_2.png" alt="MnS"  width="10%" height="10%">
             <img src="https://raw.githubusercontent.com/qcdis-sdia/qcdis-sdia.github.io/main/images/SDIA%20logo.png" alt="SDIA" width="5%" height="5%">
-
 <!--            <img src="https://www.lifewatch.eu/image/journal/article?img_id=1307465&t=1542636417563" alt="LifeWatch"  width="80" height="50">-->
 <!--            <img src="https://envri.eu/wp-content/uploads/2019/10/envri_logo_final-1.jpg" alt="envri"  width="80" height="50">-->
         </p>
