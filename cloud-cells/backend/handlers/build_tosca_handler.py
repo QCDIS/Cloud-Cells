@@ -58,9 +58,14 @@ class BuildToscaHandler(BaseHandler):
 
         tosca = self.get_tosca_for_docker_images(image_names,cloud_providers)
 
-        plan = self.get_plan_from_sdia(sdia_url,sdia_username,sdia_password,sdia_token,tosca)
-        logger.info('Got plan: '+yaml.dump(plan))
-        self.finish(json.dumps(plan))
+        plan, plan_id = self.get_plan_from_sdia(sdia_url,sdia_username,sdia_password,sdia_token,tosca)
+        logger.info('Got plan: '+json.dumps(plan))
+        provision_id = self.provision(sdia_url, sdia_username, sdia_password, sdia_token, plan_id)
+        deployment_id = self.deploy(sdia_url, sdia_username, sdia_password, sdia_token, provision_id)
+
+        deployment = self.get_tosca(sdia_url, sdia_username, sdia_password, sdia_token, deployment_id)
+
+        self.finish(json.dumps(deployment))
 
 
     def get_tosca_for_docker_images(self, image_names,cloud_providers):
@@ -101,7 +106,7 @@ class BuildToscaHandler(BaseHandler):
         plan_id = self.get_plan(sdia_url, sdia_username, sdia_password, sdia_token, tosca_id)
         plan = self.get_tosca(sdia_url, sdia_username, sdia_password, sdia_token, plan_id)
         plan = yaml.safe_load(plan)
-        return plan
+        return plan, plan_id
 
     def get_plan(self, sdia_url, sdia_username, sdia_password, sdia_token, tosca_id):
         url = sdia_url + '/planner/plan/' + tosca_id
@@ -120,3 +125,22 @@ class BuildToscaHandler(BaseHandler):
         response = requests.request("GET", url, headers=headers, data=payload)
 
         return response.text
+
+    def deploy(self, sdia_url, sdia_username, sdia_password, sdia_token, provision_id):
+        url = sdia_url + '/deployer/deploy/'+provision_id
+
+        payload = {}
+        headers = {}
+
+        response = requests.request("GET", url, headers=headers, data=payload)
+
+        return response.text
+
+    def provision(self, sdia_url, sdia_username, sdia_password, sdia_token, plan_id):
+        url = sdia_url + '/provisioner/provision/' + plan_id
+        payload = {}
+        headers = {}
+
+        response = requests.request("GET", url, headers=headers, data=payload)
+
+        return  response.text

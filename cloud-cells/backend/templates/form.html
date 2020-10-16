@@ -38,14 +38,13 @@
     }
 </style>
 
-<script src="https://d3js.org/d3.v4.js"></script>
 
 <ul id="tabs" class="nav nav-tabs">
     <li id="btn-tab-build" class="active">
-        <a href="#build" data-toggle="tab">Build</a>
+        <a href="#build" data-toggle="tab">Configure SDIA</a>
     </li>
     <li id="btn-tab-run">
-        <a href="#run" data-toggle="tab">Run</a>
+        <a href="#run" data-toggle="tab">Deploy Cell</a>
     </li>
     <li id="btn-tab-validate">
         <a href="#validate" data-toggle="tab">About</a>
@@ -73,7 +72,7 @@
 
     </ul>
 
-    <ul id="cloud-cells-run" class="flex-outer ">
+    <ul id="cloud-cells-run" class="flex-outer hide">
         <li>
             <div style="width:300px; height:150px; overflow:auto;">
                 <p>
@@ -114,24 +113,11 @@
         </li>
         <li>
             <p>Infrastructure Plan</p>
-            <textarea id="build-output" cols="50" rows="5" type="textarea" disabled></textarea>
+            <textarea id="plan-output" cols="50" rows="5" type="textarea" disabled></textarea>
         </li>
-<!--        <li>-->
-<!--            <label for="run-port">Port:</label>-->
-<!--            <input id="run-port" value="10000" type="number"/>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--            <label for="container-status">Status:</label>-->
-<!--            <input id="container-status" value="idle" type="text" disabled/>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--            <div>-->
-<!--                <input id="run-button" type="submit" value="Run"/>-->
-<!--                <input id="status-button" type="submit" value="Status"/>-->
-<!--                <input id="stop-button" type="submit" value="Stop"/>-->
-<!--            </div>-->
-<!--        </li>-->
+
     </ul>
+
        <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>
 
@@ -162,3 +148,6 @@
 
 
 </form>
+
+
+

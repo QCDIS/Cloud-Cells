@@ -30,13 +30,13 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             pullImagesButton: document.getElementById('pull-images-button'),
             planButton: document.getElementById('plan-images-button'),
             pullImagesNotify: document.getElementById('pull-images-notify'),
-
+            planOutput: document.getElementById('plan-output'),
 //            environmentArea: document.getElementById('environment-area'),
 
 //            runPortInput: document.getElementById('run-port'),
 
 
-//            buildOutput: document.getElementById('build-output'),
+
 //            buildNotify: document.getElementById('plan-notify'),
 
 
@@ -44,8 +44,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
 
             runButton: document.getElementById('run-button'),
-            statusButton: document.getElementById('status-button'),
-            stopButton: document.getElementById('stop-button'),
+//            statusButton: document.getElementById('status-button'),
+//            stopButton: document.getElementById('stop-button'),
 
 //            cellPreview: document.getElementById('cell-preview'),
             containerStatus: document.getElementById('container-status')
@@ -134,17 +134,16 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handlebuildContainerButtonClick = async (e) => {
         e.preventDefault();
 
-        elms.planButton.value = 'Generating Plan...';
+        elms.planButton.value = 'Deploying Images...';
         elms.planButton.disabled = true;
-        elms.planButton.value = '';
+        elms.planOutput.value = '';
         let imageNames = []
         for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
             let imageRow = row.childNodes[0]
             let imageName = imageRow.childNodes[0].nodeValue;
             let imageSelect = imageRow.childNodes[1];
-            console.log('imageSelect.checked=: '+imageSelect.checked)
+
             if (imageSelect.checked){
-                console.log('Adding=: '+imageName)
                 imageNames.push(imageName);
             }
         }
@@ -155,9 +154,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             let providerRow = row.childNodes[0]
             let providerName = providerRow.childNodes[0].nodeValue;
             let providerSelect = providerRow.childNodes[1];
-            console.log('providerSelect.checked: '+providerSelect.checked)
+
             if (providerSelect.checked){
-                console.log('Adding: '+providerName)
                 cloudProviders.push(providerName);
             }
         }
@@ -181,19 +179,33 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         if (res.status !== 200) {
             return alert(await res.text())
         }
-
         const tosca = await res.json()
 
 
         showToscaPlan(tosca)
 
-        elms.planButton.value = 'Plan';
+        elms.planButton.value = 'Deploy';
         elms.planButton.disabled = false;
     }
 
     function showToscaPlan(tosca) {
-        var obj = JSON.parse(tosca);
-        console.log('obj: '+obj)
+//        const map = new Map(Object.entries(tosca));
+        let node_templates = tosca.topology_template.node_templates
+
+
+        var textPlan = ''
+        for (var nodeName in node_templates) {
+            let node = node_templates[nodeName]
+            console.log(nodeName+':'+node)
+            textPlan += nodeName + ':'+node.type+'\n'
+            textPlan.concat(nodeName);
+            let requirements = node.requirements
+            if (requirements){
+            	console.log(requirements)
+            }
+        }
+        console.log(textPlan)
+        elms.planOutput.value = textPlan;
     }
 
     const handleRunButtonClick = async (e) => {
@@ -275,9 +287,9 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.planButton.onclick = handlebuildContainerButtonClick;
 
 
-        elms.runButton.onclick = handleRunButtonClick;
-        elms.statusButton.onclick = handleStatusButtonClick;
-        elms.stopButton.onclick = handleStopButtonClick;
+//        elms.runButton.onclick = handleRunButtonClick;
+//        elms.statusButton.onclick = handleStatusButtonClick;
+//        elms.stopButton.onclick = handleStopButtonClick;
 
 
 
