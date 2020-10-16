@@ -38,6 +38,8 @@
     }
 </style>
 
+<script src="https://d3js.org/d3.v4.js"></script>
+
 <ul id="tabs" class="nav nav-tabs">
     <li id="btn-tab-build" class="active">
         <a href="#build" data-toggle="tab">Build</a>
@@ -54,7 +56,7 @@
     <ul id="cloud-cells-build" class="flex-outer">
         <li>
             <label for="sdia-url">SDIA URL:</label>
-            <input type="url" id="sdia-url" size=40 value="https://fry.lab.uvalight.net:30001/manager"/>
+            <input type="url" id="sdia-url" size=40 value="http://fry.lab.uvalight.net:30000/manager/"/>
         </li>
         <li>
             <label for="sdia-username">SDIA Username:</label>
@@ -71,53 +73,64 @@
 
     </ul>
 
-    <ul id="cloud-cells-run" class="flex-outer hide">
+    <ul id="cloud-cells-run" class="flex-outer ">
+        <li>
+            <div style="width:300px; height:150px; overflow:auto;">
+                <p>
+                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
+                </p>
+                <p id="pull-providers-notify"></p>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
+                    <tr>
+                        <th>Cloud Provider</th>
+                    </tr>
+                </table>
+            </div>
+        </li>
+
         <li>
             <label for="docker-repository-url">Docker Repository URL:</label>
-            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
+            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/qcdis"/>
         </li>
         <li>
+            <div style="width:320px; height:200px; overflow:auto;">
             <p>
                 <input id="pull-images-button" type="submit" value="Pull Images"/>
             </p>
             <p id="pull-images-notify"></p>
-        </li>
-
-        <li>
-            <label for="docker-image">Image:</label>
-            <select id="docker-image" form="cloud-cells-form">
-            </select>
-        </li>
-
-        <li>
-            <p>Dockerfile:</p>
-            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="image-table">
+                    <tr>
+                        <th>Image</th>
+<!--                        <th>Select</th>-->
+                    </tr>
+                </table>
+            </div>
         </li>
         <li>
             <p>
-                <input id="build-container-button" type="submit" value="Build"/>
+                <input id="plan-images-button" type="submit" value="Plan"/>
             </p>
-            <p id="build-notify"></p>
+            <p id="plan-notify"></p>
         </li>
         <li>
-            <p>Build logs:</p>
+            <p>Infrastructure Plan</p>
             <textarea id="build-output" cols="50" rows="5" type="textarea" disabled></textarea>
         </li>
-        <li>
-            <label for="run-port">Port:</label>
-            <input id="run-port" value="10000" type="number"/>
-        </li>
-        <li>
-            <label for="container-status">Status:</label>
-            <input id="container-status" value="idle" type="text" disabled/>
-        </li>
-        <li>
-            <div>
-                <input id="run-button" type="submit" value="Run"/>
-                <input id="status-button" type="submit" value="Status"/>
-                <input id="stop-button" type="submit" value="Stop"/>
-            </div>
-        </li>
+<!--        <li>-->
+<!--            <label for="run-port">Port:</label>-->
+<!--            <input id="run-port" value="10000" type="number"/>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <label for="container-status">Status:</label>-->
+<!--            <input id="container-status" value="idle" type="text" disabled/>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <div>-->
+<!--                <input id="run-button" type="submit" value="Run"/>-->
+<!--                <input id="status-button" type="submit" value="Status"/>-->
+<!--                <input id="stop-button" type="submit" value="Stop"/>-->
+<!--            </div>-->
+<!--        </li>-->
     </ul>
        <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>

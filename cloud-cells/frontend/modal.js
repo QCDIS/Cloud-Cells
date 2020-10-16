@@ -16,21 +16,32 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
     const getElements = () => {
         return {
-            imageNameInput: document.getElementById('sdia-url'),
-//            baseImageSelector: document.getElementById('base-image'),
-            imageSelector: document.getElementById('docker-image'),
+            sdiaUrlInput: document.getElementById('sdia-url'),
+            sdiaUsernameInput: document.getElementById('sdia-username'),
+            sdiaPasswordInput: document.getElementById('sdia-password'),
+            sdiaAuthTokenInput: document.getElementById('sdia-auth-token'),
+
+            cloudProviderTable: document.getElementById('cloud-provider-table'),
+            pullProvidersButton: document.getElementById('pull-providers-button'),
+            providersNotify: document.getElementById('pull-providers-notify'),
+
             dockerRepositoryInput: document.getElementById('docker-repository-url'),
+            imageTable: document.getElementById('image-table'),
+            pullImagesButton: document.getElementById('pull-images-button'),
+            planButton: document.getElementById('plan-images-button'),
+            pullImagesNotify: document.getElementById('pull-images-notify'),
+
 //            environmentArea: document.getElementById('environment-area'),
 
-            runPortInput: document.getElementById('run-port'),
+//            runPortInput: document.getElementById('run-port'),
 
-            buildButton: document.getElementById('build-container-button'),
-            buildOutput: document.getElementById('build-output'),
-            buildNotify: document.getElementById('build-notify'),
 
-            pullImagesButton: document.getElementById('pull-images-button'),
+//            buildOutput: document.getElementById('build-output'),
+//            buildNotify: document.getElementById('plan-notify'),
+
+
 //            buildDockerFileOutput: document.getElementById('build-dockerfile-output'),
-            buildDockerFileNotify: document.getElementById('pull-images-notify'),
+
 
             runButton: document.getElementById('run-button'),
             statusButton: document.getElementById('status-button'),
@@ -53,72 +64,67 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         currTab = newTab;
     };
 
-//    const setCellSelectOptions = () => {
-//        // Allow the user to only select code cells.
-//        Jupyter.notebook.get_cells()
-//            .map((cell, idx) => cell.cell_type == 'code' ? idx : null)
-//            .filter(idx => idx !== null)
-//            .forEach(idx => {
-//                const opt = document.createElement('option');
-//                opt.value = idx;
-//                opt.innerHTML = `Cell ${idx}`
-//
-//                elms.imageSelector.appendChild(opt);
-//            })
-//
-//        elms.imageSelector.onchange = async (e) => {
-//            const idx = Number(elms.imageSelector.value)
-//            const cellPreviewElm = Jupyter.notebook.get_cell(idx).output_area.wrapper[0];
-//            const outputElm = cellPreviewElm.getElementsByClassName('output_subarea')[0];
-//
-//            if (outputElm) {
-//                elms.cellPreview.innerHTML = outputElm.innerHTML;
-//            } else {
-//                elms.cellPreview.innerHTML = '<p>Output not rendered.</p>';
-//            }
-//
-//            const inspectorResp = await fetch(`/dj/notebook/${notebook.path}/inspect/inspector.html?cellIdx=${idx}`);
-//            if (inspectorResp.status === 501) {
-//                // No inspector for this Kernel
-//                return;
-//            } else if (!inspectorResp.ok) {
-//                return alert(await inspectorResp.text());
-//            }
-//
-//            elms.kernelSpecific.innerHTML = await inspectorResp.text();
-//
-//        }
-//
-//        elms.imageSelector.onchange(null);
-//    }
+    const handleGetCloudProvidersButtonClick = async (e) => {
+        e.preventDefault();
 
-    const handleBuildDockerFileButtonClick = async (e) => {
+        elms.pullProvidersButton.value = 'Pulling Cloud Providers...';
+        elms.pullProvidersButton.disabled = true;
+
+        for (var i = 1, row; row = elms.cloudProviderTable.rows[i]; i++) {
+            row.remove();
+        }
+        let providers = ['Amazon','ExoGeni','EOSC']
+        providers.forEach(image => {
+            let tr = document.createElement("tr");
+            let text = document.createTextNode(image);
+            tr.appendChild(text);
+
+            var checkbox = document.createElement("INPUT");
+            checkbox.setAttribute("type", "checkbox");
+            tr.appendChild(checkbox);
+            let row = elms.cloudProviderTable.insertRow();
+            row.appendChild(tr);
+        })
+
+        elms.pullProvidersButton.value = 'Pull Cloud Providers';
+        elms.pullProvidersButton.disabled = false;
+    }
+
+    const handlePullImagesButtonClick = async (e) => {
         e.preventDefault();
 
         elms.pullImagesButton.value = 'Pulling Images...';
         elms.pullImagesButton.disabled = true;
 
+        for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
+            row.remove();
+        }
 
         console.log('setImageSelectOptions')
         console.log('elms.dockerRepositoryInput.value: '+elms.dockerRepositoryInput.value)
 
-//        const res = await jsonRequest('GET', `/dj/image/${notebook.path}/command/status`)
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
             dockerRepository: elms.dockerRepositoryInput.value
         })
-        console.log('res: '+res)
+
         const images = await res.json()
-        console.log('images: '+images)
+
         if (images.length <= 0) {
             elms.pullImagesButton.value = 'Pull Images';
             elms.pullImagesButton.disabled = false;
            return alert(await 'Repository has no images')
         }
+
         images.forEach(image => {
-            const opt = document.createElement('option');
-            opt.value = image;
-            opt.innerHTML = `${image}`
-            elms.imageSelector.appendChild(opt);
+            let tr = document.createElement("tr");
+            let text = document.createTextNode(image);
+            tr.appendChild(text);
+
+            var checkbox = document.createElement("INPUT");
+            checkbox.setAttribute("type", "checkbox");
+            tr.appendChild(checkbox);
+            let row = elms.imageTable.insertRow();
+            row.appendChild(tr);
         })
 
         elms.pullImagesButton.value = 'Pull Images';
@@ -128,42 +134,66 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handlebuildContainerButtonClick = async (e) => {
         e.preventDefault();
 
-        elms.buildButton.value = 'Building Container...';
-        elms.buildButton.disabled = true;
-        elms.buildOutput.value = '';
+        elms.planButton.value = 'Generating Plan...';
+        elms.planButton.disabled = true;
+        elms.planButton.value = '';
+        let imageNames = []
+        for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
+            let imageRow = row.childNodes[0]
+            let imageName = imageRow.childNodes[0].nodeValue;
+            let imageSelect = imageRow.childNodes[1];
+            console.log('imageSelect.checked=: '+imageSelect.checked)
+            if (imageSelect.checked){
+                console.log('Adding=: '+imageName)
+                imageNames.push(imageName);
+            }
+        }
+        console.log('imageNames: '+imageNames)
 
-        const variables = {};
-        document.querySelectorAll(`input[data-variable]:checked`).forEach(elm => {
-            variables[elm.dataset.variable] = elm.value
-        })
+        let cloudProviders = []
+        for (var i = 1, row; row = elms.cloudProviderTable.rows[i]; i++) {
+            let providerRow = row.childNodes[0]
+            let providerName = providerRow.childNodes[0].nodeValue;
+            let providerSelect = providerRow.childNodes[1];
+            console.log('providerSelect.checked: '+providerSelect.checked)
+            if (providerSelect.checked){
+                console.log('Adding: '+providerName)
+                cloudProviders.push(providerName);
+            }
+        }
 
-        let timeoutId = setTimeout(() => {
-            elms.buildNotify.innerHTML = "This might take a while..."
-
-            timeoutId = setTimeout(() => {
-                elms.buildNotify.innerHTML = "Especially the first time ..."
-            }, 5000)
-        }, 5000)
-
+//        let timeoutId = setTimeout(() => {
+//            elms.buildNotify.innerHTML = "This might take a while..."
+//        }, 5000)
+//
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
-            imageName: elms.imageNameInput.value,
-            baseImage: 'elms.baseImageSelector.value',
-            environment: 'elms.environmentArea.value',
-            variables: variables
+            imageNames: imageNames,
+            cloudProviders: cloudProviders,
+            sdiaUrl: elms.sdiaUrlInput.value,
+            sdiaUsername: elms.sdiaUsernameInput.value,
+            sdiaPassword: elms.sdiaPasswordInput.value,
+            sdiaAuthToken: elms.sdiaAuthTokenInput.value
         })
-
-        clearTimeout(timeoutId);
-        elms.buildNotify.innerHTML = ""
-
+//
+//        clearTimeout(timeoutId);
+//        elms.buildNotify.innerHTML = ""
+//
         if (res.status !== 200) {
             return alert(await res.text())
         }
 
-        const data = await res.json()
+        const tosca = await res.json()
 
-        elms.buildButton.value = 'Build';
-        elms.buildButton.disabled = false;
-        elms.buildOutput.value = data['logs']
+
+        showToscaPlan(tosca)
+
+        elms.planButton.value = 'Plan';
+        elms.planButton.disabled = false;
+    }
+
+    function showToscaPlan(tosca) {
+        var obj = JSON.parse(tosca);
+        console.log('obj: '+obj)
     }
 
     const handleRunButtonClick = async (e) => {
@@ -172,7 +202,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.runButton.value = 'Running...';
         elms.runButton.disabled = true;
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdiaUrlInput.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/run`, {
             port: Number(elms.runPortInput.value)
         })
@@ -192,7 +222,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handleStatusButtonClick = async (e) => {
         e.preventDefault();
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdiaUrlInput.value;
         const res = await jsonRequest('GET', `/dj/image/${imageName}/command/status`)
 
         if (res.status !== 200) {
@@ -207,7 +237,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const handleStopButtonClick = async (e) => {
         e.preventDefault();
 
-        const imageName = elms.imageNameInput.value;
+        const imageName = elms.sdiaUrlInput.value;
         const res = await jsonRequest('POST', `/dj/image/${imageName}/command/stop`)
 
         if (res.status !== 200) {
@@ -239,14 +269,18 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms = getElements();
 
-//        setCellSelectOptions(elms.imageSelector, elms.cellPreview);
+
+        elms.pullImagesButton.onclick = handlePullImagesButtonClick;
+        elms.pullProvidersButton.onclick = handleGetCloudProvidersButtonClick;
+        elms.planButton.onclick = handlebuildContainerButtonClick;
 
 
-        elms.buildButton.onclick = handlebuildContainerButtonClick;
-        elms.pullImagesButton.onclick = handleBuildDockerFileButtonClick;
         elms.runButton.onclick = handleRunButtonClick;
         elms.statusButton.onclick = handleStatusButtonClick;
         elms.stopButton.onclick = handleStopButtonClick;
+
+
+
 
         const res = await jsonRequest('GET', `/dj/notebook/${notebook.path}/environment`)
 
@@ -261,7 +295,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         openFormHandler: async () => {
             const formHtml = await formPromise;
 
-            dialog.modal({title: 'FAIR-Cells',
+            dialog.modal({title: 'CloudCells',
                 keyboard_manager: Jupyter.keyboard_manager, 
                 body: () => formHtml, 
                 open: onOpen

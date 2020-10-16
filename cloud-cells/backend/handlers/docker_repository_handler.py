@@ -29,7 +29,7 @@ def create_config(notebook_path, cell_index, variables):
     })
 
 
-class BuildDockerFileHandler(BaseHandler):
+class DockerRepositoryHandler(BaseHandler):
 
     def post(self, path):
         body = self.get_json_body()
