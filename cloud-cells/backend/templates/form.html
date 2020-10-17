@@ -139,17 +139,18 @@
             <p>
                 <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
             </p>
+        </li>
             <p id="deploy-notify"></p>
-        </li>
         <li>
-            <p>Deployed Cells </p>
-            <div id="deploy-output">
+            <div id="deploy-output" style="width:400px; height:200px; overflow:auto;">
+             <table cellspacing="1" cellpadding="1" border="1" width="400" id="deploy-output-table">
+                 <tr>
+<!--                     <td>A</td>-->
+<!--                     <td>B</td>-->
+                 </tr>
+             </table>
             </div>
-
-<!--            <textarea id="deploy-output" cols="50" rows="5" type="textarea" disabled>-->
-<!--            </textarea>-->
         </li>
-
     </ul>
 
        <ul id="cloud-cells-about" class="flex-outer hide">

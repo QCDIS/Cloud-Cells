@@ -32,28 +32,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             deployButton: document.getElementById('deploy-images-button'),
             pullImagesNotify: document.getElementById('pull-images-notify'),
             deployOutput: document.getElementById('deploy-output'),
-            loader: document.getElementById('loader'),
-
-//            environmentArea: document.getElementById('environment-area'),
-
-//            runPortInput: document.getElementById('run-port'),
-
-
-
-//            buildNotify: document.getElementById('deploy-notify'),
-
-
-//            buildDockerFileOutput: document.getElementById('build-dockerfile-output'),
-
-
-            runButton: document.getElementById('run-button'),
-//            statusButton: document.getElementById('status-button'),
-//            stopButton: document.getElementById('stop-button'),
-
-//            cellPreview: document.getElementById('cell-preview'),
-            containerStatus: document.getElementById('container-status')
-
-//            kernelSpecific: document.getElementById('kernel-specific')
+            deployOutputTable: document.getElementById('deploy-output-table'),
+            loader: document.getElementById('loader')
         }
     }
 
@@ -213,16 +193,43 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             let node = node_templates[nodeName]
             console.log(nodeName+':'+node.type)
             console.log('typeof node.type: '+ typeof node.type)
+            if (node.type==='tosca.nodes.QC.docker.Orchestrator.Kubernetes'){
+                let dashboard_url = node.attributes.dashboard_url
+                console.log('dashboard_url: '+dashboard_url)
+                textDeploy += ' dashboard url: '+dashboard_url;
+
+                var row = elms.deployOutputTable.insertRow();
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = "dashboard url";
+                var cell2 = row.insertCell(1);
+                var createA = document.createElement('a');
+                var createAText = document.createTextNode(dashboard_url);
+                createA.setAttribute('href', dashboard_url);
+                createA.appendChild(createAText);
+                cell2.appendChild(createA);
+
+
+                let dashboard_token = node.attributes.tokens[0].token
+                var row = elms.deployOutputTable.insertRow();
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = "dashboard token";
+                var cell2 = row.insertCell(1);
+                cell2.innerHTML = dashboard_token;
+
+            }
             if (node.type==='tosca.nodes.QC.Container.Application.Docker'){
                 let service_url = node.attributes.service_url
                 console.log('service_url: '+service_url)
                 textDeploy += ' cell url: '+service_url;
+                var row = elms.deployOutputTable.insertRow();
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = "Cell URL";
+                var cell2 = row.insertCell(1);
                 var createA = document.createElement('a');
                 var createAText = document.createTextNode(service_url);
                 createA.setAttribute('href', service_url);
                 createA.appendChild(createAText);
-                elms.deployOutput.appendChild(createA);
-
+                cell2.appendChild(createA);
             }
             textDeploy+='\n'
 //            let requirements = node.requirements
