@@ -1,5 +1,4 @@
 from tornado.web import RequestHandler, HTTPError
-from tornado import template
 
 import os
 

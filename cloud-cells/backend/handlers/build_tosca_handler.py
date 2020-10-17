@@ -1,25 +1,13 @@
-import json
-import os
-import tempfile
-import shutil
-import importlib
-import urllib
-import yaml
 import copy
-import requests
-
-from typing import Optional
-
-import docker
-from notebook.base.handlers import IPythonHandler, APIHandler, HTTPError
-from notebook.utils import url_path_join
-
-from ..container.creator import ContainerCreator
-from .base_handler import BaseHandler
-from .environment_handler import BASE_STRING
-
-
+import json
 import logging
+import tempfile
+import urllib
+
+import requests
+import yaml
+
+from .base_handler import BaseHandler
 
 logger = logging.getLogger('BuildToscaHandler')
 logger.setLevel(logging.DEBUG)
@@ -88,7 +76,7 @@ class BuildToscaHandler(BaseHandler):
             new_node_template['artifacts']['image']['file'] = image_name
             new_node_template['properties']['ports'][0] = str(port_count) + ':' + '8888'
             port_count += 1
-            node_templates[names[1]] = new_node_template
+            node_templates[names[1].replace('_', '').replace('-', '')] = new_node_template
 
         return tosca
 
