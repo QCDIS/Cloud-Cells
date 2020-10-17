@@ -36,6 +36,35 @@
     .modal-body {
         padding: 0 !important;
     }
+    .loader {
+    position: fixed;
+    left: 250px;
+    top: 250px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    green;
+    border-bottom: 16px solid red;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    }
+
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 
 
@@ -52,6 +81,7 @@
 </ul>
 
 <form id="cloud-cells-form">
+    <div id="loader" class="loader hide"></div>
     <ul id="cloud-cells-build" class="flex-outer">
         <li>
             <label for="sdia-url">SDIA URL:</label>
@@ -89,12 +119,12 @@
 
         <li>
             <label for="docker-repository-url">Docker Repository URL:</label>
-            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/qcdis"/>
+            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
         </li>
         <li>
             <div style="width:320px; height:200px; overflow:auto;">
             <p>
-                <input id="pull-images-button" type="submit" value="Pull Images"/>
+                <input id="pull-images-button" type="submit" value="Pull Images" disabled/>
             </p>
             <p id="pull-images-notify"></p>
                 <table cellspacing="1" cellpadding="1" border="1" width="300" id="image-table">
@@ -107,13 +137,17 @@
         </li>
         <li>
             <p>
-                <input id="plan-images-button" type="submit" value="Plan"/>
+                <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
             </p>
-            <p id="plan-notify"></p>
+            <p id="deploy-notify"></p>
         </li>
         <li>
-            <p>Infrastructure Plan</p>
-            <textarea id="plan-output" cols="50" rows="5" type="textarea" disabled></textarea>
+            <p>Deployed Cells </p>
+            <div id="deploy-output">
+            </div>
+
+<!--            <textarea id="deploy-output" cols="50" rows="5" type="textarea" disabled>-->
+<!--            </textarea>-->
         </li>
 
     </ul>

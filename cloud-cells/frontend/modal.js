@@ -28,16 +28,19 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             dockerRepositoryInput: document.getElementById('docker-repository-url'),
             imageTable: document.getElementById('image-table'),
             pullImagesButton: document.getElementById('pull-images-button'),
-            planButton: document.getElementById('plan-images-button'),
+
+            deployButton: document.getElementById('deploy-images-button'),
             pullImagesNotify: document.getElementById('pull-images-notify'),
-            planOutput: document.getElementById('plan-output'),
+            deployOutput: document.getElementById('deploy-output'),
+            loader: document.getElementById('loader'),
+
 //            environmentArea: document.getElementById('environment-area'),
 
 //            runPortInput: document.getElementById('run-port'),
 
 
 
-//            buildNotify: document.getElementById('plan-notify'),
+//            buildNotify: document.getElementById('deploy-notify'),
 
 
 //            buildDockerFileOutput: document.getElementById('build-dockerfile-output'),
@@ -87,7 +90,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         })
 
         elms.pullProvidersButton.value = 'Pull Cloud Providers';
-        elms.pullProvidersButton.disabled = false;
+//        elms.pullProvidersButton.disabled = false;
+        elms.pullImagesButton.disabled = false;
     }
 
     const handlePullImagesButtonClick = async (e) => {
@@ -128,15 +132,21 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         })
 
         elms.pullImagesButton.value = 'Pull Images';
-        elms.pullImagesButton.disabled = false;
+        elms.deployButton.disabled = false;
+//        elms.pullImagesButton.disabled = false;
+//        elms.pullProvidersButton.disabled = false;
+//        elms.pullImagesButton.disabled = false;
     }
 
     const handlebuildContainerButtonClick = async (e) => {
         e.preventDefault();
 
-        elms.planButton.value = 'Deploying Images...';
-        elms.planButton.disabled = true;
-        elms.planOutput.value = '';
+        elms.deployButton.value = 'Deploying Images...';
+        elms.deployButton.disabled = true;
+        elms.deployOutput.value = '';
+        elms.loader.classList.remove('hide')
+
+        console.log('elms.loader.style.display: '+elms.loader.style.display)
         let imageNames = []
         for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
             let imageRow = row.childNodes[0]
@@ -172,6 +182,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             sdiaPassword: elms.sdiaPasswordInput.value,
             sdiaAuthToken: elms.sdiaAuthTokenInput.value
         })
+
 //
 //        clearTimeout(timeoutId);
 //        elms.buildNotify.innerHTML = ""
@@ -181,31 +192,46 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }
         const tosca = await res.json()
 
+        showToscaDeploy(tosca)
 
-        showToscaPlan(tosca)
-
-        elms.planButton.value = 'Deploy';
-        elms.planButton.disabled = false;
+        elms.loader.classList.add('hide')
+        elms.deployButton.value = 'Deploy';
+        elms.deployButton.disabled = true;
+        elms.pullImagesButton.disabled = true;
+        elms.pullProvidersButton.disabled = false;
     }
 
-    function showToscaPlan(tosca) {
+    function showToscaDeploy(tosca) {
+        console.log(typeof tosca)
+        console.log(tosca)
 //        const map = new Map(Object.entries(tosca));
         let node_templates = tosca.topology_template.node_templates
 
 
-        var textPlan = ''
+        var textDeploy = ''
         for (var nodeName in node_templates) {
             let node = node_templates[nodeName]
-            console.log(nodeName+':'+node)
-            textPlan += nodeName + ':'+node.type+'\n'
-            textPlan.concat(nodeName);
-            let requirements = node.requirements
-            if (requirements){
-            	console.log(requirements)
+            console.log(nodeName+':'+node.type)
+            console.log('typeof node.type: '+ typeof node.type)
+            if (node.type==='tosca.nodes.QC.Container.Application.Docker'){
+                let service_url = node.attributes.service_url
+                console.log('service_url: '+service_url)
+                textDeploy += ' cell url: '+service_url;
+                var createA = document.createElement('a');
+                var createAText = document.createTextNode(service_url);
+                createA.setAttribute('href', service_url);
+                createA.appendChild(createAText);
+                elms.deployOutput.appendChild(createA);
+
             }
+            textDeploy+='\n'
+//            let requirements = node.requirements
+//            if (requirements){
+//            	console.log(requirements)
+//            }
         }
-        console.log(textPlan)
-        elms.planOutput.value = textPlan;
+        console.log(textDeploy)
+//        elms.deployOutput.value = textDeploy;
     }
 
     const handleRunButtonClick = async (e) => {
@@ -284,7 +310,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms.pullImagesButton.onclick = handlePullImagesButtonClick;
         elms.pullProvidersButton.onclick = handleGetCloudProvidersButtonClick;
-        elms.planButton.onclick = handlebuildContainerButtonClick;
+        elms.deployButton.onclick = handlebuildContainerButtonClick;
 
 
 //        elms.runButton.onclick = handleRunButtonClick;
