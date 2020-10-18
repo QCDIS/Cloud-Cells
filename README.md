@@ -19,7 +19,7 @@ $ jupyter nbextension enable cloud-cells --user --py
 
 #### Run with Docker
 ```bash
-docker run -it -p 8888:8888  -v /var/run/docker.sock:/var/run/docker.sock qcdis/cloud-cells 
+docker run -it -p 8888:8888  qcdis/cloud-cells 
 ```
 
 #### Development
