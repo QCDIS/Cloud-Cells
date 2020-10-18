@@ -13,6 +13,7 @@ RUN python setup.py install
 RUN jupyter serverextension enable --py cloud-cells
 RUN jupyter nbextension install --py cloud-cells
 RUN jupyter nbextension enable cloud-cells  --py
+WORKDIR ../ 
 RUN rm -r src
 
 # ENTRYPOINT cd /src && \
