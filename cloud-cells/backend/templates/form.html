@@ -36,14 +36,44 @@
     .modal-body {
         padding: 0 !important;
     }
+    .loader {
+    position: fixed;
+    left: 250px;
+    top: 250px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    green;
+    border-bottom: 16px solid red;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+    }
+
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
+
 
 <ul id="tabs" class="nav nav-tabs">
     <li id="btn-tab-build" class="active">
-        <a href="#build" data-toggle="tab">Build</a>
+        <a href="#build" data-toggle="tab">Configure SDIA</a>
     </li>
     <li id="btn-tab-run">
-        <a href="#run" data-toggle="tab">Run</a>
+        <a href="#run" data-toggle="tab">Deploy Cell</a>
     </li>
     <li id="btn-tab-validate">
         <a href="#validate" data-toggle="tab">About</a>
@@ -51,78 +81,79 @@
 </ul>
 
 <form id="cloud-cells-form">
+    <div id="loader" class="loader hide"></div>
     <ul id="cloud-cells-build" class="flex-outer">
-        <h4>Build</h4>
         <li>
-            <label for="image-name">Image name:</label>
-            <input id="image-name" value="nb_helper"/>
-        </li>
-        <li>
-            <label for="base-image">Base image:</label>
-            <select id="base-image" name="base-image" form="create-form">
-                {% for display, image in images %}
-                    <option value="{{ image }}">{{ display }}</option>
-                {% end %}
-            </select>
+            <label for="sdia-url">SDIA URL:</label>
+            <input type="url" id="sdia-url" size=40 value="http://fry.lab.uvalight.net:30000/manager/"/>
         </li>
         <li>
-            <label for="cell-index">Cell:</label>
-            <select id="cell-index" form="create-form">
-                
-            </select>
-            
+            <label for="sdia-username">SDIA Username:</label>
+            <input id="sdia-username" value=""/>
         </li>
         <li>
-            <p>Preview:</p>
-            <div id="cell-preview"></div>
+            <label for="sdia-password">SDIA Password:</label>
+            <input type="password" id="sdia-password" name="sdia-password" minlength="8"><br><br>
         </li>
         <li>
-            <label for="environment-area">Conda environment.yml:</label>
-            <textarea id="environment-area" cols="50" rows="7" type="textarea"></textarea>
+            <label for="sdia-auth-token">Authorization token:</label>
+            <input type="password" id="sdia-auth-token" name="sdia-auth-token" minlength="8"><br><br>
         </li>
-        <li id="kernel-specific">
-        </li>
-        <li>
-            <p>
-                <input id="build-dockerfile-button" type="submit" value="Build Dockerfile"/>
-            </p>
-            <p id="build-dockerfile-notify"></p>
-        </li>
-        <li>
-            <p>Dockerfile:</p>
-            <textarea id="build-dockerfile-output" cols="50" rows="5" type="textarea" disabled></textarea>
-        </li>
-        <li>
-            <p>
-                <input id="build-container-button" type="submit" value="Build"/>
-            </p>
-            <p id="build-notify"></p>
-        </li>
-        <li>
-            <p>Build logs:</p>
-            <textarea id="build-output" cols="50" rows="5" type="textarea" disabled></textarea>
-        </li>
+
     </ul>
 
     <ul id="cloud-cells-run" class="flex-outer hide">
-        <h4>Run</h4>
         <li>
-            <label for="run-port">Port:</label>
-            <input id="run-port" value="10000" type="number"/>
+            <div style="width:300px; height:150px; overflow:auto;">
+                <p>
+                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
+                </p>
+                <p id="pull-providers-notify"></p>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
+                    <tr>
+                        <th>Cloud Provider</th>
+                    </tr>
+                </table>
+            </div>
+        </li>
+
+        <li>
+            <label for="docker-repository-url">Docker Repository URL:</label>
+            <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
         </li>
         <li>
-            <label for="container-status">Status:</label>
-            <input id="container-status" value="idle" type="text" disabled/>
+            <div style="width:320px; height:200px; overflow:auto;">
+            <p>
+                <input id="pull-images-button" type="submit" value="Pull Images" disabled/>
+            </p>
+            <p id="pull-images-notify"></p>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="image-table">
+                    <tr>
+                        <th>Image</th>
+<!--                        <th>Select</th>-->
+                    </tr>
+                </table>
+            </div>
         </li>
         <li>
-            <div>
-                <input id="run-button" type="submit" value="Run"/>
-                <input id="status-button" type="submit" value="Status"/>
-                <input id="stop-button" type="submit" value="Stop"/>
+            <p>
+                <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
+            </p>
+        </li>
+            <p id="deploy-notify"></p>
+        <li>
+            <div id="deploy-output" style="width:400px; height:200px; overflow:auto;">
+             <table cellspacing="1" cellpadding="1" border="1" width="400" id="deploy-output-table">
+                 <tr>
+<!--                     <td>A</td>-->
+<!--                     <td>B</td>-->
+                 </tr>
+             </table>
             </div>
         </li>
     </ul>
-    <ul id="cloud-cells-about" class="flex-outer hide">
+
+       <ul id="cloud-cells-about" class="flex-outer hide">
         <h4>About</h4>
 
         <p style="margin-left: 5%;">
@@ -133,18 +164,14 @@
         <p style="margin-top: 5%;margin-left: 5%;">
             Developers:
         <li style="margin-left: 5%;">
-            W. Kruijer <a href="mailto:wilcokruijer@gmail.com">wilcokruijer@gmail.com</a>
-        </li>
-        <li style="margin-left: 5%;">
             S. Koulouzis <a href="mailto:S.Koulouzis@uva.nl">S.Koulouzis@uva.nl</a>
         </li>
         </p>
 
         <p style="text-align:right;margin-right: 5%;">
-
-            <img src="https://mns-research.nl/images/logo_hua931301caa9e2c039e68fbb874deb22a_17897_0x70_resize_lanczos_2.png" alt="MnS"  width="15%" height="15%">
-            <img src="https://bynder-public-eu-central-1.s3.amazonaws.com/media/9E3E0032-62BD-4694-A3CCB1BC17CA3CAF/820AE599-3321-4FD3-96AAF5D0926A84C2/webimage-ED0F2C5B-4DB7-4916-8A9990566EFDA309.png" alt="UvA" width="10%" height="10%">
-
+            <img src="https://bynder-public-eu-central-1.s3.amazonaws.com/media/9E3E0032-62BD-4694-A3CCB1BC17CA3CAF/820AE599-3321-4FD3-96AAF5D0926A84C2/webimage-ED0F2C5B-4DB7-4916-8A9990566EFDA309.png" alt="UvA" width="5%" height="5%">
+            <img src="https://mns-research.nl/images/logo_hua931301caa9e2c039e68fbb874deb22a_17897_0x70_resize_lanczos_2.png" alt="MnS"  width="10%" height="10%">
+            <img src="https://raw.githubusercontent.com/qcdis-sdia/qcdis-sdia.github.io/main/images/SDIA%20logo.png" alt="SDIA" width="5%" height="5%">
 <!--            <img src="https://www.lifewatch.eu/image/journal/article?img_id=1307465&t=1542636417563" alt="LifeWatch"  width="80" height="50">-->
 <!--            <img src="https://envri.eu/wp-content/uploads/2019/10/envri_logo_final-1.jpg" alt="envri"  width="80" height="50">-->
         </p>
@@ -156,3 +183,6 @@
 
 
 </form>
+
+
+

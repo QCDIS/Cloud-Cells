@@ -2,12 +2,7 @@ import json
 import os
 import importlib
 
-from typing import Optional
-
-import docker
 from notebook.base.handlers import APIHandler, HTTPError
-
-from ..container.creator import ContainerCreator
 from .base_handler import BaseHandler
 
 class InspectHandler(BaseHandler):
@@ -44,7 +39,7 @@ class InspectHandler(BaseHandler):
             variables = inspector.get_variables(notebook, cell_index)
 
             self.finish(json.dumps({
-                'data': variables
+                'data': 'variables'
             }))
         elif command == "inspector.html":
             cell_index = self._int_argument('cellIdx')
