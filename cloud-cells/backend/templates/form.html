@@ -103,27 +103,13 @@
 
     <ul id="cloud-cells-run" class="flex-outer hide">
         <li>
-            <div style="width:300px; height:150px; overflow:auto;">
-                <p>
-                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
-                </p>
-                <p id="pull-providers-notify"></p>
-                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
-                    <tr>
-                        <th>Cloud Provider</th>
-                    </tr>
-                </table>
-            </div>
-        </li>
-
-        <li>
             <label for="docker-repository-url">Docker Repository URL:</label>
             <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
         </li>
         <li>
             <div style="width:320px; height:200px; overflow:auto;">
             <p>
-                <input id="pull-images-button" type="submit" value="Pull Images" disabled/>
+                <input id="pull-images-button" type="submit" value="Pull Images"/>
             </p>
             <p id="pull-images-notify"></p>
                 <table cellspacing="1" cellpadding="1" border="1" width="300" id="image-table">
@@ -135,17 +121,42 @@
             </div>
         </li>
         <li>
+            <div style="width:300px; height:150px; overflow:auto;display: none;">
+                <p>
+                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
+                </p>
+                <p id="pull-providers-notify"></p>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
+                    <tr>
+                        <th>Cloud Provider</th>
+                    </tr>
+                </table>
+            </div>
+        </li>
+        <li>
             <p>
+                <label for="topology-selection">Topology ID:</label>
+                <select id="topology-selection" form="cloud-cells-form">
+                </select>
                 <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
             </p>
         </li>
             <p id="deploy-notify"></p>
         <li>
-            <div id="deploy-output" style="width:400px; height:200px; overflow:auto;">
+            <h5>
+                Deployed Elements
+            </h5>
+        </li>
+
+        <li>
+            <div id="deploy-output" style="width:500px; height:150px; overflow:auto;">
              <table cellspacing="1" cellpadding="1" border="1" width="400" id="deploy-output-table">
                  <tr>
-<!--                     <td>A</td>-->
-<!--                     <td>B</td>-->
+                     <td>Name</td>
+<!--                      <td>Select</td>-->
+                     <td>URL</td>
+                     <td>Access Token</td>
+                     <td>Type</td>
                  </tr>
              </table>
             </div>

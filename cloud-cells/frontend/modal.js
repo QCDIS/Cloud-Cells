@@ -31,6 +31,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             imageTable: document.getElementById('image-table'),
             pullImagesButton: document.getElementById('pull-images-button'),
 
+            topologySelector: document.getElementById('topology-selection'),
             deployButton: document.getElementById('deploy-images-button'),
             pullImagesNotify: document.getElementById('pull-images-notify'),
             deployOutput: document.getElementById('deploy-output'),
@@ -73,7 +74,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms.pullProvidersButton.value = 'Pull Cloud Providers';
 //        elms.pullProvidersButton.disabled = false;
-        elms.pullImagesButton.disabled = false;
+//        elms.pullImagesButton.disabled = false;
     }
 
     const handleSdiaLoginButtonClick = async (e) => {
@@ -87,6 +88,26 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     }
 
 
+    const setTopologySelectOptions = async (e) => {
+//        e.preventDefault();
+//        const opt = document.createElement('option');
+//        opt.value = topologyID;
+//        opt.innerHTML = 'New'
+//        elms.topologySelector.appendChild(opt);
+
+        let topologyID = '5f996e2ec152607e6fbbb510'
+        const opt = document.createElement('option');
+        opt.value = topologyID;
+        opt.innerHTML = `${topologyID}`
+        elms.topologySelector.appendChild(opt);
+
+        elms.topologySelector.onchange = async (e) => {
+            const topologyID = Number(elms.topologySelector.value)
+        }
+
+        elms.topologySelector.onchange(null);
+    }
+
     const handlePullImagesButtonClick = async (e) => {
         e.preventDefault();
 
@@ -96,9 +117,6 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
             row.remove();
         }
-
-        console.log('setImageSelectOptions')
-        console.log('elms.dockerRepositoryInput.value: '+elms.dockerRepositoryInput.value)
 
         const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/images`, {
             dockerRepository: elms.dockerRepositoryInput.value
@@ -172,7 +190,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             cloudProviders: cloudProviders,
             sdiaUrl: elms.sdiaUrlInput.value,
             sdiaUsername: elms.sdiaUsernameInput.value,
-            sdiaAuthToken: elms.sdiaAuthTokenInput.value
+            sdiaAuthToken: elms.sdiaAuthTokenInput.value,
+            sdiaDeploymentId: elms.topologySelector.value,
         })
 
 //
@@ -184,12 +203,12 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         }
         const response = await res.json()
 
-        showToscaDeploy(response.tosca)
+        showToscaDeploy(response)
 
         elms.loader.classList.add('hide')
         elms.deployButton.value = 'Deploy';
         elms.deployButton.disabled = true;
-        elms.pullImagesButton.disabled = true;
+        elms.pullImagesButton.disabled = false;
         elms.pullProvidersButton.disabled = false;
         elms.deployButton.disabled = false;
 
@@ -205,54 +224,47 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         var textDeploy = ''
         for (var nodeName in node_templates) {
             let node = node_templates[nodeName]
-            console.log(nodeName+':'+node.type)
-            console.log('typeof node.type: '+ typeof node.type)
+
+            var row = elms.deployOutputTable.insertRow();
+            var nameCell = row.insertCell(0);
+            nameCell.innerHTML = nodeName;
+
+//            var selectCell = row.insertCell(1);
+//            var checkbox = document.createElement("INPUT");
+//            checkbox.setAttribute("type", "checkbox");
+//            selectCell.appendChild(checkbox);
+
+            var urlCell = row.insertCell(1);
+            nameCell.innerHTML = nodeName;
+
+            var tokenCell = row.insertCell(2);
+            urlCell.innerHTML = '';
+
+            var typeCell = row.insertCell(3);
+            typeCell.innerHTML = node.type
+
             if (node.type==='tosca.nodes.QC.docker.Orchestrator.Kubernetes'){
                 let dashboard_url = node.attributes.dashboard_url
-                console.log('dashboard_url: '+dashboard_url)
-                textDeploy += ' dashboard url: '+dashboard_url;
-
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "dashboard url";
-                var cell2 = row.insertCell(1);
                 var createA = document.createElement('a');
                 var createAText = document.createTextNode(dashboard_url);
                 createA.setAttribute('href', dashboard_url);
                 createA.appendChild(createAText);
-                cell2.appendChild(createA);
+                urlCell.appendChild(createA);
 
 
                 let dashboard_token = node.attributes.tokens[0].token
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "dashboard token";
-                var cell2 = row.insertCell(1);
-                cell2.innerHTML = dashboard_token;
+                tokenCell.innerHTML = dashboard_token;
 
             }
             if (node.type==='tosca.nodes.QC.Container.Application.Docker'){
                 let service_url = node.attributes.service_url
-                console.log('service_url: '+service_url)
-                textDeploy += ' cell url: '+service_url;
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "Cell URL";
-                var cell2 = row.insertCell(1);
                 var createA = document.createElement('a');
                 var createAText = document.createTextNode(service_url);
                 createA.setAttribute('href', service_url);
                 createA.appendChild(createAText);
-                cell2.appendChild(createA);
+                urlCell.appendChild(createA);
             }
-            textDeploy+='\n'
-//            let requirements = node.requirements
-//            if (requirements){
-//            	console.log(requirements)
-//            }
         }
-        console.log(textDeploy)
-//        elms.deployOutput.value = textDeploy;
     }
 
     const handleRunButtonClick = async (e) => {
@@ -327,6 +339,8 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         switchTab(currTab);
 
         elms = getElements();
+
+        setTopologySelectOptions();
 
         elms.sdiaLoginButton.onclick = handleSdiaLoginButtonClick
         elms.pullImagesButton.onclick = handlePullImagesButtonClick;

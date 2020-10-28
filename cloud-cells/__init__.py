@@ -19,7 +19,7 @@ def load_jupyter_server_extension(nbapp):
 
     from .backend.handlers.environment_handler import EnvironmentHandler
     from .backend.handlers.template_handler import TemplateHandler
-    from .backend.handlers.sdia_handler import SDIAHandler
+    from .backend.handlers.deploy_handler import DeployHandler
     from .backend.handlers.docker_repository_handler import DockerRepositoryHandler
     from .backend.handlers.command_handler import CommandHandler
     from .backend.handlers.inspect_handler import InspectHandler
@@ -39,7 +39,7 @@ def load_jupyter_server_extension(nbapp):
     template_pattern = url_path_join(base, r'/dj/templates/(.*\.(?:html|js|css))')
 
     web_app.add_handlers(host_pattern, [
-        (deploy_pattern, SDIAHandler),
+        (deploy_pattern, DeployHandler),
         (build_docker_file_pattern, DockerRepositoryHandler),
         (image_command_pattern, CommandHandler),
         (environment_pattern, EnvironmentHandler),
