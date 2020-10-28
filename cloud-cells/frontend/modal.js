@@ -182,15 +182,17 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         if (res.status !== 200) {
             return alert(await res.text())
         }
-        const tosca = await res.json()
+        const response = await res.json()
 
-        showToscaDeploy(tosca)
+        showToscaDeploy(response.tosca)
 
         elms.loader.classList.add('hide')
         elms.deployButton.value = 'Deploy';
         elms.deployButton.disabled = true;
         elms.pullImagesButton.disabled = true;
         elms.pullProvidersButton.disabled = false;
+        elms.deployButton.disabled = false;
+
     }
 
     function showToscaDeploy(tosca) {
@@ -330,7 +332,6 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.pullImagesButton.onclick = handlePullImagesButtonClick;
         elms.pullProvidersButton.onclick = handleGetCloudProvidersButtonClick;
         elms.deployButton.onclick = handleDeployContainerButtonClick;
-
 
 //        elms.runButton.onclick = handleRunButtonClick;
 //        elms.statusButton.onclick = handleStatusButtonClick;

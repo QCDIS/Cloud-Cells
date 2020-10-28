@@ -44,6 +44,7 @@ class SDIAHandler(BaseHandler):
         sdia_password = body.get('sdiaPassword')
         sdia_token = body.get('sdiaAuthToken')
 
+
         tosca = self.get_tosca_for_docker_images(image_names, cloud_providers)
         # logger.debug(yaml.dump(tosca))
 
@@ -57,7 +58,7 @@ class SDIAHandler(BaseHandler):
         logger.debug('deploy_id: ' + deploy_id)
         deployed_tosca = self.get_tosca(sdia_url, 'sdia_username', 'sdia_password', 'sdia_token', deploy_id)
 
-        logger.debug(yaml.dump(deployed_tosca))
+        logger.debug(yaml.dump({'id':deploy_id,'tosca':deployed_tosca}))
 
         self.finish(json.dumps(yaml.safe_load(deployed_tosca)))
 
