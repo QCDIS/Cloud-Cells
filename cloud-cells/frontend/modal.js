@@ -18,8 +18,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         return {
             sdiaUrlInput: document.getElementById('sdia-url'),
             sdiaUsernameInput: document.getElementById('sdia-username'),
-            sdiaPasswordInput: document.getElementById('sdia-password'),
             sdiaAuthTokenInput: document.getElementById('sdia-auth-token'),
+            sdiaLoginButton: document.getElementById('sdia-login-button'),
+
+
 
             cloudProviderTable: document.getElementById('cloud-provider-table'),
             pullProvidersButton: document.getElementById('pull-providers-button'),
@@ -74,6 +76,17 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.pullImagesButton.disabled = false;
     }
 
+    const handleSdiaLoginButtonClick = async (e) => {
+        e.preventDefault();
+        elms.sdiaLoginButton.disabled = true;
+
+
+        elms.sdiaLoginButton.disabled = false;
+
+        return alert(await 'Login Successful')
+    }
+
+
     const handlePullImagesButtonClick = async (e) => {
         e.preventDefault();
 
@@ -87,7 +100,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         console.log('setImageSelectOptions')
         console.log('elms.dockerRepositoryInput.value: '+elms.dockerRepositoryInput.value)
 
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
+        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/images`, {
             dockerRepository: elms.dockerRepositoryInput.value
         })
 
@@ -118,7 +131,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //        elms.pullImagesButton.disabled = false;
     }
 
-    const handlebuildContainerButtonClick = async (e) => {
+    const handleDeployContainerButtonClick = async (e) => {
         e.preventDefault();
 
         elms.deployButton.value = 'Deploying Images...';
@@ -126,7 +139,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.deployOutput.value = '';
         elms.loader.classList.remove('hide')
 
-        console.log('elms.loader.style.display: '+elms.loader.style.display)
+
         let imageNames = []
         for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
             let imageRow = row.childNodes[0]
@@ -154,12 +167,11 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //            elms.buildNotify.innerHTML = "This might take a while..."
 //        }, 5000)
 //
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
+        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/deploy`, {
             imageNames: imageNames,
             cloudProviders: cloudProviders,
             sdiaUrl: elms.sdiaUrlInput.value,
             sdiaUsername: elms.sdiaUsernameInput.value,
-            sdiaPassword: elms.sdiaPasswordInput.value,
             sdiaAuthToken: elms.sdiaAuthTokenInput.value
         })
 
@@ -314,10 +326,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms = getElements();
 
-
+        elms.sdiaLoginButton.onclick = handleSdiaLoginButtonClick
         elms.pullImagesButton.onclick = handlePullImagesButtonClick;
         elms.pullProvidersButton.onclick = handleGetCloudProvidersButtonClick;
-        elms.deployButton.onclick = handlebuildContainerButtonClick;
+        elms.deployButton.onclick = handleDeployContainerButtonClick;
 
 
 //        elms.runButton.onclick = handleRunButtonClick;

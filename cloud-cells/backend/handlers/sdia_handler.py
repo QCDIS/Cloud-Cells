@@ -34,7 +34,7 @@ def create_config(notebook_path, cell_index, variables):
     })
 
 
-class BuildToscaHandler(BaseHandler):
+class SDIAHandler(BaseHandler):
     def post(self, path):
         body = self.get_json_body()
         image_names = body.get('imageNames')
@@ -45,7 +45,7 @@ class BuildToscaHandler(BaseHandler):
         sdia_token = body.get('sdiaAuthToken')
 
         tosca = self.get_tosca_for_docker_images(image_names, cloud_providers)
-        logger.debug(yaml.dump(tosca))
+        # logger.debug(yaml.dump(tosca))
 
         tosca_id = self.upload_tosca_file(sdia_url, 'sdia_username', 'sdia_password', 'sdia_token', tosca)
         logger.debug('tosca_id: ' + tosca_id)
