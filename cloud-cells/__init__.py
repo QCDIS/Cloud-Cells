@@ -30,13 +30,13 @@ def load_jupyter_server_extension(nbapp):
     base = web_app.settings['base_url']
 
     host_pattern = '.*$'
-    deploy_pattern = url_path_join(base, '/dj/notebook/(.*)/deploy')
-    build_docker_file_pattern = url_path_join(base, '/dj/notebook/(.*)/images')
-    image_command_pattern = url_path_join(base, '/dj/image/(.*)/command/(.*)')
-    environment_pattern = url_path_join(base, '/dj/notebook/(.*)/environment')
-    inspect_pattern = url_path_join(base, '/dj/notebook/(.*)/inspect/(.*)')
+    deploy_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/deploy')
+    build_docker_file_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/images')
+    image_command_pattern = url_path_join(base, '/cloud-cells/image/(.*)/command/(.*)')
+    environment_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/environment')
+    inspect_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/inspect/(.*)')
 
-    template_pattern = url_path_join(base, r'/dj/templates/(.*\.(?:html|js|css))')
+    template_pattern = url_path_join(base, r'/cloud-cells/templates/(.*\.(?:html|js|css))')
 
     web_app.add_handlers(host_pattern, [
         (deploy_pattern, DeployHandler),

@@ -5,7 +5,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const dialog = require('base/js/dialog');
     const { jsonRequest } = require("./util");
 
-    const formPromise = fetch('/dj/templates/form.html').then(resp => resp.text());
+    const formPromise = fetch('/cloud-cells/templates/form.html').then(resp => resp.text());
 
     const formElements = {};
     const buttonElements = {};
@@ -118,7 +118,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             row.remove();
         }
 
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/images`, {
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/images`, {
             dockerRepository: elms.dockerRepositoryInput.value
         })
 
@@ -185,7 +185,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //            elms.buildNotify.innerHTML = "This might take a while..."
 //        }, 5000)
 //
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/deploy`, {
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/deploy`, {
             imageNames: imageNames,
             cloudProviders: cloudProviders,
             sdiaUrl: elms.sdiaUrlInput.value,
@@ -229,18 +229,18 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             var nameCell = row.insertCell(0);
             nameCell.innerHTML = nodeName;
 
-//            var selectCell = row.insertCell(1);
-//            var checkbox = document.createElement("INPUT");
-//            checkbox.setAttribute("type", "checkbox");
-//            selectCell.appendChild(checkbox);
+            var selectCell = row.insertCell(1);
+            var checkbox = document.createElement("INPUT");
+            checkbox.setAttribute("type", "checkbox");
+            selectCell.appendChild(checkbox);
 
-            var urlCell = row.insertCell(1);
+            var urlCell = row.insertCell(2);
             nameCell.innerHTML = nodeName;
 
-            var tokenCell = row.insertCell(2);
+            var tokenCell = row.insertCell(3);
             urlCell.innerHTML = '';
 
-            var typeCell = row.insertCell(3);
+            var typeCell = row.insertCell(4);
             typeCell.innerHTML = node.type
 
             if (node.type==='tosca.nodes.QC.docker.Orchestrator.Kubernetes'){
@@ -274,7 +274,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.runButton.disabled = true;
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('POST', `/dj/image/${imageName}/command/run`, {
+        const res = await jsonRequest('POST', `/cloud-cells/image/${imageName}/command/run`, {
             port: Number(elms.runPortInput.value)
         })
 
@@ -294,7 +294,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         e.preventDefault();
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('GET', `/dj/image/${imageName}/command/status`)
+        const res = await jsonRequest('GET', `/cloud-cells/image/${imageName}/command/status`)
 
         if (res.status !== 200) {
             return alert(await res.text())
@@ -309,7 +309,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         e.preventDefault();
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('POST', `/dj/image/${imageName}/command/stop`)
+        const res = await jsonRequest('POST', `/cloud-cells/image/${imageName}/command/stop`)
 
         if (res.status !== 200) {
             return alert(await res.text())
@@ -354,7 +354,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
 
 
-        const res = await jsonRequest('GET', `/dj/notebook/${notebook.path}/environment`)
+        const res = await jsonRequest('GET', `/cloud-cells/notebook/${notebook.path}/environment`)
 
         if (!res.ok) {
             return alert(await res.text());
