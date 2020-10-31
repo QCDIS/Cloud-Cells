@@ -23,6 +23,7 @@ def load_jupyter_server_extension(nbapp):
     from .backend.handlers.docker_repository_handler import DockerRepositoryHandler
     from .backend.handlers.command_handler import CommandHandler
     from .backend.handlers.inspect_handler import InspectHandler
+    from .backend.handlers.sdia_topologies_ids_handler import SDIATopologiesIDsHandler
 
     nbapp.log.info("Cloud-Cells loaded.")
 
@@ -35,12 +36,15 @@ def load_jupyter_server_extension(nbapp):
     image_command_pattern = url_path_join(base, '/cloud-cells/image/(.*)/command/(.*)')
     environment_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/environment')
     inspect_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/inspect/(.*)')
+    sdia_topologies_ids_pattern = url_path_join(base, '/cloud-cells/notebook/(.*)/sdia_topologies_ids')
+
 
     template_pattern = url_path_join(base, r'/cloud-cells/templates/(.*\.(?:html|js|css))')
 
     web_app.add_handlers(host_pattern, [
         (deploy_pattern, DeployHandler),
         (build_docker_file_pattern, DockerRepositoryHandler),
+        (sdia_topologies_ids_pattern, SDIATopologiesIDsHandler),
         (image_command_pattern, CommandHandler),
         (environment_pattern, EnvironmentHandler),
         (inspect_pattern, InspectHandler),

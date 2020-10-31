@@ -90,3 +90,10 @@ class SDIAService:
 
         return response.text
 
+    def get_running_topologies(self):
+        with urllib.request.urlopen(
+                'https://raw.githubusercontent.com/qcdis-sdia/sdia-orchestrator/master/scratch/ids.yaml') as stream:
+            # html = f.read().decode('utf-8')
+            ids = yaml.safe_load(stream)
+        return ids
+

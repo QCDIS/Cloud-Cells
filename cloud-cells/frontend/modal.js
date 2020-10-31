@@ -90,16 +90,24 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
     const setTopologySelectOptions = async (e) => {
 //        e.preventDefault();
-//        const opt = document.createElement('option');
-//        opt.value = topologyID;
-//        opt.innerHTML = 'New'
-//        elms.topologySelector.appendChild(opt);
 
-        let topologyID = '5f9aa3ac458c142db3efde3a'
-        const opt = document.createElement('option');
-        opt.value = topologyID;
-        opt.innerHTML = `${topologyID}`
-        elms.topologySelector.appendChild(opt);
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/sdia_topologies_ids`, {
+            sdiaUrl: elms.sdiaUrlInput.value,
+            sdiaUsername: elms.sdiaUsernameInput.value,
+            sdiaAuthToken: elms.sdiaAuthTokenInput.value,
+        })
+
+        if (res.status !== 200) {
+            return alert(await res.text())
+        }
+        const ids = await res.json()
+        ids.forEach(idx => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerHTML = `${idx}`
+
+            elms.topologySelector.appendChild(opt);
+        })
 
         elms.topologySelector.onchange = async (e) => {
             const topologyID = Number(elms.topologySelector.value)
@@ -181,10 +189,15 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             }
         }
 
-//        let timeoutId = setTimeout(() => {
-//            elms.buildNotify.innerHTML = "This might take a while..."
-//        }, 5000)
-//
+        if (elms.topologySelector.value === 'New'){
+            elms.loader.classList.add('hide')
+            elms.deployButton.value = 'Deploy';
+            elms.deployButton.disabled = true;
+            elms.pullImagesButton.disabled = false;
+            elms.pullProvidersButton.disabled = false;
+            elms.deployButton.disabled = false;
+            return alert(await 'Only an administrator can create a new infrastructure!')
+        }
         const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/deploy`, {
             imageNames: imageNames,
             cloudProviders: cloudProviders,

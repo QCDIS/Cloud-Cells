@@ -45,7 +45,19 @@ class DeployHandler(BaseHandler):
         sdia_token = body.get('sdiaAuthToken')
         sdia_deployment_id = body.get('sdiaDeploymentId')
         sdia = SDIAService(sdia_url,sdia_username,sdia_token)
-        if sdia_deployment_id:
+        if not sdia_deployment_id or sdia_deployment_id == 'New':
+            tosca = sdia.get_tosca_for_docker_images(image_names, cloud_providers)
+            tosca_id = sdia.upload_tosca_file(tosca)
+            logger.debug('tosca_id: ' + tosca_id)
+            plan_id = sdia.get_plan(tosca_id)
+            logger.debug('plan_id: ' + plan_id)
+            # provision_id = sdia.provision(plan_id)
+            # logger.debug('provision_id: ' + provision_id)
+            # deploy_id = sdia.deploy(provision_id)
+            # logger.debug('deploy_id: ' + deploy_id)
+            # deployed_tosca = sdia.get_tosca(deploy_id)
+            # self.finish(json.dumps(yaml.safe_load(deployed_tosca)))
+        else:
             logger.info('sdia_deployment_id: '+sdia_deployment_id)
             deployed_tosca = sdia.get_tosca(sdia_deployment_id)
             deployed_tosca_dict = yaml.safe_load(deployed_tosca)
@@ -56,15 +68,4 @@ class DeployHandler(BaseHandler):
             logger.info('deploy_id: ' + deploy_id)
             deployed_tosca = sdia.get_tosca(deploy_id)
             self.finish(json.dumps(yaml.safe_load(deployed_tosca)))
-        else:
-            tosca = sdia.get_tosca_for_docker_images(image_names, cloud_providers)
-            tosca_id = sdia.upload_tosca_file(tosca)
-            logger.debug('tosca_id: ' + tosca_id)
-            plan_id = sdia.get_plan(tosca_id)
-            logger.debug('plan_id: ' + plan_id)
-            provision_id = sdia.provision(plan_id)
-            logger.debug('provision_id: ' + provision_id)
-            deploy_id = sdia.deploy(provision_id)
-            logger.debug('deploy_id: ' + deploy_id)
-            deployed_tosca = sdia.get_tosca(deploy_id)
-            self.finish(json.dumps(yaml.safe_load(deployed_tosca)))
+
