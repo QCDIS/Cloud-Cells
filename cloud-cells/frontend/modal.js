@@ -5,7 +5,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
     const dialog = require('base/js/dialog');
     const { jsonRequest } = require("./util");
 
-    const formPromise = fetch('/dj/templates/form.html').then(resp => resp.text());
+    const formPromise = fetch('/cloud-cells/templates/form.html').then(resp => resp.text());
 
     const formElements = {};
     const buttonElements = {};
@@ -18,8 +18,10 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         return {
             sdiaUrlInput: document.getElementById('sdia-url'),
             sdiaUsernameInput: document.getElementById('sdia-username'),
-            sdiaPasswordInput: document.getElementById('sdia-password'),
             sdiaAuthTokenInput: document.getElementById('sdia-auth-token'),
+            sdiaLoginButton: document.getElementById('sdia-login-button'),
+
+
 
             cloudProviderTable: document.getElementById('cloud-provider-table'),
             pullProvidersButton: document.getElementById('pull-providers-button'),
@@ -29,6 +31,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             imageTable: document.getElementById('image-table'),
             pullImagesButton: document.getElementById('pull-images-button'),
 
+            topologySelector: document.getElementById('topology-selection'),
             deployButton: document.getElementById('deploy-images-button'),
             pullImagesNotify: document.getElementById('pull-images-notify'),
             deployOutput: document.getElementById('deploy-output'),
@@ -71,7 +74,46 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms.pullProvidersButton.value = 'Pull Cloud Providers';
 //        elms.pullProvidersButton.disabled = false;
-        elms.pullImagesButton.disabled = false;
+//        elms.pullImagesButton.disabled = false;
+    }
+
+    const handleSdiaLoginButtonClick = async (e) => {
+        e.preventDefault();
+        elms.sdiaLoginButton.disabled = true;
+
+
+        elms.sdiaLoginButton.disabled = false;
+
+        return alert(await 'Login Successful')
+    }
+
+
+    const setTopologySelectOptions = async (e) => {
+//        e.preventDefault();
+
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/sdia_topologies_ids`, {
+            sdiaUrl: elms.sdiaUrlInput.value,
+            sdiaUsername: elms.sdiaUsernameInput.value,
+            sdiaAuthToken: elms.sdiaAuthTokenInput.value,
+        })
+
+        if (res.status !== 200) {
+            return alert(await res.text())
+        }
+        const ids = await res.json()
+        ids.forEach(idx => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerHTML = `${idx}`
+
+            elms.topologySelector.appendChild(opt);
+        })
+
+        elms.topologySelector.onchange = async (e) => {
+            const topologyID = Number(elms.topologySelector.value)
+        }
+
+        elms.topologySelector.onchange(null);
     }
 
     const handlePullImagesButtonClick = async (e) => {
@@ -84,10 +126,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             row.remove();
         }
 
-        console.log('setImageSelectOptions')
-        console.log('elms.dockerRepositoryInput.value: '+elms.dockerRepositoryInput.value)
-
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build_docker_file`, {
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/images`, {
             dockerRepository: elms.dockerRepositoryInput.value
         })
 
@@ -118,7 +157,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 //        elms.pullImagesButton.disabled = false;
     }
 
-    const handlebuildContainerButtonClick = async (e) => {
+    const handleDeployContainerButtonClick = async (e) => {
         e.preventDefault();
 
         elms.deployButton.value = 'Deploying Images...';
@@ -126,7 +165,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.deployOutput.value = '';
         elms.loader.classList.remove('hide')
 
-        console.log('elms.loader.style.display: '+elms.loader.style.display)
+
         let imageNames = []
         for (var i = 1, row; row = elms.imageTable.rows[i]; i++) {
             let imageRow = row.childNodes[0]
@@ -150,17 +189,22 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
             }
         }
 
-//        let timeoutId = setTimeout(() => {
-//            elms.buildNotify.innerHTML = "This might take a while..."
-//        }, 5000)
-//
-        const res = await jsonRequest('POST', `/dj/notebook/${notebook.path}/build`, {
+        if (elms.topologySelector.value === 'New'){
+            elms.loader.classList.add('hide')
+            elms.deployButton.value = 'Deploy';
+            elms.deployButton.disabled = true;
+            elms.pullImagesButton.disabled = false;
+            elms.pullProvidersButton.disabled = false;
+            elms.deployButton.disabled = false;
+            return alert(await 'Only an administrator can create a new infrastructure!')
+        }
+        const res = await jsonRequest('POST', `/cloud-cells/notebook/${notebook.path}/deploy`, {
             imageNames: imageNames,
             cloudProviders: cloudProviders,
             sdiaUrl: elms.sdiaUrlInput.value,
             sdiaUsername: elms.sdiaUsernameInput.value,
-            sdiaPassword: elms.sdiaPasswordInput.value,
-            sdiaAuthToken: elms.sdiaAuthTokenInput.value
+            sdiaAuthToken: elms.sdiaAuthTokenInput.value,
+            sdiaDeploymentId: elms.topologySelector.value,
         })
 
 //
@@ -170,15 +214,17 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         if (res.status !== 200) {
             return alert(await res.text())
         }
-        const tosca = await res.json()
+        const response = await res.json()
 
-        showToscaDeploy(tosca)
+        showToscaDeploy(response)
 
         elms.loader.classList.add('hide')
         elms.deployButton.value = 'Deploy';
         elms.deployButton.disabled = true;
-        elms.pullImagesButton.disabled = true;
+        elms.pullImagesButton.disabled = false;
         elms.pullProvidersButton.disabled = false;
+        elms.deployButton.disabled = false;
+
     }
 
     function showToscaDeploy(tosca) {
@@ -191,54 +237,47 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         var textDeploy = ''
         for (var nodeName in node_templates) {
             let node = node_templates[nodeName]
-            console.log(nodeName+':'+node.type)
-            console.log('typeof node.type: '+ typeof node.type)
+
+            var row = elms.deployOutputTable.insertRow();
+            var nameCell = row.insertCell(0);
+            nameCell.innerHTML = nodeName;
+
+            var selectCell = row.insertCell(1);
+            var checkbox = document.createElement("INPUT");
+            checkbox.setAttribute("type", "checkbox");
+            selectCell.appendChild(checkbox);
+
+            var urlCell = row.insertCell(2);
+            nameCell.innerHTML = nodeName;
+
+            var tokenCell = row.insertCell(3);
+            urlCell.innerHTML = '';
+
+            var typeCell = row.insertCell(4);
+            typeCell.innerHTML = node.type
+
             if (node.type==='tosca.nodes.QC.docker.Orchestrator.Kubernetes'){
                 let dashboard_url = node.attributes.dashboard_url
-                console.log('dashboard_url: '+dashboard_url)
-                textDeploy += ' dashboard url: '+dashboard_url;
-
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "dashboard url";
-                var cell2 = row.insertCell(1);
                 var createA = document.createElement('a');
                 var createAText = document.createTextNode(dashboard_url);
                 createA.setAttribute('href', dashboard_url);
                 createA.appendChild(createAText);
-                cell2.appendChild(createA);
+                urlCell.appendChild(createA);
 
 
                 let dashboard_token = node.attributes.tokens[0].token
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "dashboard token";
-                var cell2 = row.insertCell(1);
-                cell2.innerHTML = dashboard_token;
+                tokenCell.innerHTML = dashboard_token;
 
             }
             if (node.type==='tosca.nodes.QC.Container.Application.Docker'){
                 let service_url = node.attributes.service_url
-                console.log('service_url: '+service_url)
-                textDeploy += ' cell url: '+service_url;
-                var row = elms.deployOutputTable.insertRow();
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = "Cell URL";
-                var cell2 = row.insertCell(1);
                 var createA = document.createElement('a');
                 var createAText = document.createTextNode(service_url);
                 createA.setAttribute('href', service_url);
                 createA.appendChild(createAText);
-                cell2.appendChild(createA);
+                urlCell.appendChild(createA);
             }
-            textDeploy+='\n'
-//            let requirements = node.requirements
-//            if (requirements){
-//            	console.log(requirements)
-//            }
         }
-        console.log(textDeploy)
-//        elms.deployOutput.value = textDeploy;
     }
 
     const handleRunButtonClick = async (e) => {
@@ -248,7 +287,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         elms.runButton.disabled = true;
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('POST', `/dj/image/${imageName}/command/run`, {
+        const res = await jsonRequest('POST', `/cloud-cells/image/${imageName}/command/run`, {
             port: Number(elms.runPortInput.value)
         })
 
@@ -268,7 +307,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         e.preventDefault();
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('GET', `/dj/image/${imageName}/command/status`)
+        const res = await jsonRequest('GET', `/cloud-cells/image/${imageName}/command/status`)
 
         if (res.status !== 200) {
             return alert(await res.text())
@@ -283,7 +322,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
         e.preventDefault();
 
         const imageName = elms.sdiaUrlInput.value;
-        const res = await jsonRequest('POST', `/dj/image/${imageName}/command/stop`)
+        const res = await jsonRequest('POST', `/cloud-cells/image/${imageName}/command/stop`)
 
         if (res.status !== 200) {
             return alert(await res.text())
@@ -314,11 +353,12 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
         elms = getElements();
 
+        setTopologySelectOptions();
 
+        elms.sdiaLoginButton.onclick = handleSdiaLoginButtonClick
         elms.pullImagesButton.onclick = handlePullImagesButtonClick;
         elms.pullProvidersButton.onclick = handleGetCloudProvidersButtonClick;
-        elms.deployButton.onclick = handlebuildContainerButtonClick;
-
+        elms.deployButton.onclick = handleDeployContainerButtonClick;
 
 //        elms.runButton.onclick = handleRunButtonClick;
 //        elms.statusButton.onclick = handleStatusButtonClick;
@@ -327,7 +367,7 @@ define(["require", "base/js/namespace", "base/js/dialog", "./util"], function (r
 
 
 
-        const res = await jsonRequest('GET', `/dj/notebook/${notebook.path}/environment`)
+        const res = await jsonRequest('GET', `/cloud-cells/notebook/${notebook.path}/environment`)
 
         if (!res.ok) {
             return alert(await res.text());

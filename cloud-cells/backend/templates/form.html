@@ -70,7 +70,7 @@
 
 <ul id="tabs" class="nav nav-tabs">
     <li id="btn-tab-build" class="active">
-        <a href="#build" data-toggle="tab">Configure SDIA</a>
+        <a href="#build" data-toggle="tab">Configure Cloud Engine</a>
     </li>
     <li id="btn-tab-run">
         <a href="#run" data-toggle="tab">Deploy Cell</a>
@@ -84,39 +84,24 @@
     <div id="loader" class="loader hide"></div>
     <ul id="cloud-cells-build" class="flex-outer">
         <li>
-            <label for="sdia-url">SDIA URL:</label>
+            <label for="sdia-url">Cloud Engine URL:</label>
             <input type="url" id="sdia-url" size=40 value="http://fry.lab.uvalight.net:30000/manager/"/>
         </li>
         <li>
-            <label for="sdia-username">SDIA Username:</label>
+            <label for="sdia-username">Username:</label>
             <input id="sdia-username" value=""/>
-        </li>
-        <li>
-            <label for="sdia-password">SDIA Password:</label>
-            <input type="password" id="sdia-password" name="sdia-password" minlength="8"><br><br>
         </li>
         <li>
             <label for="sdia-auth-token">Authorization token:</label>
             <input type="password" id="sdia-auth-token" name="sdia-auth-token" minlength="8"><br><br>
         </li>
+        <p>
+            <input id="sdia-login-button" type="submit" value="Login"/>
+        </p>
 
     </ul>
 
     <ul id="cloud-cells-run" class="flex-outer hide">
-        <li>
-            <div style="width:300px; height:150px; overflow:auto;">
-                <p>
-                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
-                </p>
-                <p id="pull-providers-notify"></p>
-                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
-                    <tr>
-                        <th>Cloud Provider</th>
-                    </tr>
-                </table>
-            </div>
-        </li>
-
         <li>
             <label for="docker-repository-url">Docker Repository URL:</label>
             <input type="url" id="docker-repository-url" size=40 value="https://hub.docker.com/u/cloudcells"/>
@@ -124,7 +109,7 @@
         <li>
             <div style="width:320px; height:200px; overflow:auto;">
             <p>
-                <input id="pull-images-button" type="submit" value="Pull Images" disabled/>
+                <input id="pull-images-button" type="submit" value="Pull Images"/>
             </p>
             <p id="pull-images-notify"></p>
                 <table cellspacing="1" cellpadding="1" border="1" width="300" id="image-table">
@@ -136,21 +121,51 @@
             </div>
         </li>
         <li>
+            <div style="width:300px; height:150px; overflow:auto;display: none;">
+                <p>
+                    <input id="pull-providers-button" type="submit" value="Pull Providers"/>
+                </p>
+                <p id="pull-providers-notify"></p>
+                <table cellspacing="1" cellpadding="1" border="1" width="300" id="cloud-provider-table">
+                    <tr>
+                        <th>Cloud Provider</th>
+                    </tr>
+                </table>
+            </div>
+        </li>
+        <li>
             <p>
+                <label for="topology-selection">Remote Infrastructure ID:</label>
+                <select id="topology-selection" form="cloud-cells-form">
+                </select>
                 <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
             </p>
         </li>
             <p id="deploy-notify"></p>
         <li>
-            <div id="deploy-output" style="width:400px; height:200px; overflow:auto;">
+            <h5>
+                Deployed Elements
+            </h5>
+        </li>
+
+        <li>
+            <div id="deploy-output" style="width:500px; height:150px; overflow:auto;">
              <table cellspacing="1" cellpadding="1" border="1" width="400" id="deploy-output-table">
                  <tr>
-<!--                     <td>A</td>-->
-<!--                     <td>B</td>-->
+                     <td>Name</td>
+                     <td>Select</td>
+                     <td>URL</td>
+                     <td>Access Token</td>
+                     <td>Type</td>
                  </tr>
              </table>
             </div>
         </li>
+<!--        <li>-->
+<!--            <p>-->
+<!--                <input id="delete-deployment-button" type="submit" value="Delete Elements" disabled/>-->
+<!--            </p>-->
+<!--        </li>-->
     </ul>
 
        <ul id="cloud-cells-about" class="flex-outer hide">
