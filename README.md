@@ -4,8 +4,7 @@ Cloud-Cells is a Jupyter Notebook extension that allows the user to deploy docke
 
 
 #### Installation
-Cloud-Cells
- can be downloaded using pip. It then needs to be enabled using three Jupyter commands. Docker is required for the extension 
+Cloud-Cells can be downloaded using pip. It then needs to be enabled using three Jupyter commands. Docker is required for the extension 
  to have any effect.
 
 ```bash
@@ -19,7 +18,7 @@ $ jupyter nbextension enable cloud-cells --user --py
 
 #### Run with Docker
 ```bash
-docker run -it -p 8888:8888  -v /var/run/docker.sock:/var/run/docker.sock qcdis/cloud-cells 
+docker run -it -p 8888:8888  qcdis/cloud-cells 
 ```
 
 #### Development
