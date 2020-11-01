@@ -14,7 +14,7 @@ except FileNotFoundError:
 
 setuptools.setup(
     name="Cloud-Cells",
-    version="0.0.1",
+    version="0.0.2",
     author="S. Koulouzis",
     author_email="S.Koulouzis@uva.nl",
     description=short_desc,
