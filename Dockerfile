@@ -17,12 +17,12 @@ RUN jupyter nbextension enable cloud-cells  --py
 WORKDIR ../
 RUN rm -r src
 
-#ENTRYPOINT jupyter notebook -y --port=8888 --no-browser --allow-root --debug
+ENTRYPOINT jupyter notebook -y --port=8888 --no-browser --allow-root --debug
 
-ENTRYPOINT cd /src && \
-           python setup.py install &&\
-           jupyter serverextension enable --py cloud-cells && \
-           jupyter nbextension install --py cloud-cells && \
-           jupyter nbextension enable cloud-cells  --py && \
-
-           jupyter notebook -y --port=8888 --no-browser --allow-root --debug
+#ENTRYPOINT cd /src && \
+#           python setup.py install &&\
+#           jupyter serverextension enable --py cloud-cells && \
+#           jupyter nbextension install --py cloud-cells && \
+#           jupyter nbextension enable cloud-cells  --py && \
+#
+#           jupyter notebook -y --port=8888 --no-browser --allow-root --debug

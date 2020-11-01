@@ -70,7 +70,7 @@
 
 <ul id="tabs" class="nav nav-tabs">
     <li id="btn-tab-build" class="active">
-        <a href="#build" data-toggle="tab">Configure SDIA</a>
+        <a href="#build" data-toggle="tab">Configure Cloud Engine</a>
     </li>
     <li id="btn-tab-run">
         <a href="#run" data-toggle="tab">Deploy Cell</a>
@@ -84,11 +84,11 @@
     <div id="loader" class="loader hide"></div>
     <ul id="cloud-cells-build" class="flex-outer">
         <li>
-            <label for="sdia-url">SDIA URL:</label>
+            <label for="sdia-url">Cloud Engine URL:</label>
             <input type="url" id="sdia-url" size=40 value="http://fry.lab.uvalight.net:30000/manager/"/>
         </li>
         <li>
-            <label for="sdia-username">SDIA Username:</label>
+            <label for="sdia-username">Username:</label>
             <input id="sdia-username" value=""/>
         </li>
         <li>
@@ -135,7 +135,7 @@
         </li>
         <li>
             <p>
-                <label for="topology-selection">Topology ID:</label>
+                <label for="topology-selection">Remote Infrastructure ID:</label>
                 <select id="topology-selection" form="cloud-cells-form">
                 </select>
                 <input id="deploy-images-button" type="submit" value="Deploy" disabled/>
@@ -161,11 +161,11 @@
              </table>
             </div>
         </li>
-        <li>
-            <p>
-                <input id="delete-deployment-button" type="submit" value="Delete Elements" disabled/>
-            </p>
-        </li>
+<!--        <li>-->
+<!--            <p>-->
+<!--                <input id="delete-deployment-button" type="submit" value="Delete Elements" disabled/>-->
+<!--            </p>-->
+<!--        </li>-->
     </ul>
 
        <ul id="cloud-cells-about" class="flex-outer hide">
