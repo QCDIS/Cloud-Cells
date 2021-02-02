@@ -14,7 +14,7 @@ class SDIAService:
 
     def add_images_in_tosca(self,image_names,tosca):
         with urllib.request.urlopen(
-                'https://raw.githubusercontent.com/qcdis-sdia/sdia-tosca/master/examples/application_docker_template.yaml') as stream:
+                'https://raw.githubusercontent.com/qcdis-sdia/sdia-tosca/master/templates/application_docker_template.yaml') as stream:
             # html = f.read().decode('utf-8')
             docker_template = yaml.safe_load(stream)
 
@@ -32,7 +32,7 @@ class SDIAService:
 
     def get_tosca_for_docker_images(self,image_names, cloud_providers):
         with urllib.request.urlopen(
-                'https://raw.githubusercontent.com/qcdis-sdia/sdia-tosca/master/examples/docker_template.yaml') as stream:
+                'https://raw.githubusercontent.com/qcdis-sdia/sdia-tosca/master/templates/docker_template.yaml') as stream:
             # html = f.read().decode('utf-8')
             tosca = yaml.safe_load(stream)
         return self.add_images_in_tosca(image_names,tosca)

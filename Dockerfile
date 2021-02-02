@@ -20,7 +20,7 @@ RUN rm -r src
 
 COPY notebooks/classifiers.ipynb /home/jovyan/work
 
-ENTRYPOINT jupyter notebook -y --port=8888 --no-browser --allow-root --debug
+ENTRYPOINT jupyter notebook -y --port=8888 --no-browser --allow-root --debug --NotebookApp.token=''
 
 #ENTRYPOINT cd /src && \
 #           python setup.py install &&\
