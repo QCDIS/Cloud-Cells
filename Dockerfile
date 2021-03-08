@@ -6,8 +6,9 @@ RUN apt update && apt upgrade -y && apt install gcc python3-dev -y
 
 EXPOSE 8888
 
-COPY . src
+
 RUN pip install laserchicken matplotlib
+COPY . src
 WORKDIR src
 RUN pip install --no-cache-dir -r requirements.txt
 RUN python setup.py install

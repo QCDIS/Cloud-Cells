@@ -49,7 +49,7 @@ class SDIAService:
         }
 
         files = {'file': open(temp_file_path, 'rb')}
-        response = requests.post(url, files=files)
+        response = requests.post(url, files=files,auth=(self.username, self.token),verify = False)
         tosca_id = response.text
         return tosca_id
 
@@ -58,7 +58,7 @@ class SDIAService:
         payload = {}
         headers = {}
 
-        response = requests.request("GET", url, headers=headers, data=payload)
+        response = requests.request("GET", url, headers=headers, data=payload, auth=(self.username, self.token),verify = False)
         plan_id = response.text
         return plan_id
 
@@ -67,8 +67,9 @@ class SDIAService:
         payload = {}
         headers = {}
 
-        response = requests.request("GET", url, headers=headers, data=payload)
-
+        response = requests.request("GET", url, headers=headers, data=payload, auth=(self.username, self.token),verify = False)
+        if response.status_code != 200:
+            raise Exception('Failed getting deployment. Make sure the deployment ID is correct')
         return response.text
 
     def deploy(self,provision_id):
@@ -77,7 +78,7 @@ class SDIAService:
         payload = {}
         headers = {}
 
-        response = requests.request("GET", url, headers=headers, data=payload)
+        response = requests.request("GET", url, headers=headers, data=payload, auth=(self.username, self.token),verify = False)
 
         return response.text
 
@@ -86,7 +87,7 @@ class SDIAService:
         payload = {}
         headers = {}
 
-        response = requests.request("GET", url, headers=headers, data=payload)
+        response = requests.request("GET", url, headers=headers, data=payload, auth=(self.username, self.token),verify = False)
 
         return response.text
 
